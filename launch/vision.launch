@@ -1,0 +1,7 @@
+<launch>
+  <node name="vision_kernel" pkg="wm_vision" type="wm_vision" />
+
+  <param name="debug_mode" type="bool" value="true" />
+  <param name="cfvt_path" type="string" value="$(find wm_vision)/config/cfvt/" />
+  <param name="catalog_path" type="string" value="$(find wm_vision)/config/catalog.info" />
+</launch>

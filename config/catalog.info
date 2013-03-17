@@ -1,0 +1,25 @@
+find_object_boundingbox
+{
+    door testINFO
+    glass testINFO2
+    vase testINFO3
+}
+
+find_object_detail
+{
+    door testINFO4
+    glass testINFO5
+    vase testINFO6
+}
+
+find_person
+{
+    person testINFO7
+}
+
+find_gesture
+{
+    wave testINFO08
+    punch testINFO09
+    peace_sign testINFO10
+}
