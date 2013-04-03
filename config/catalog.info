@@ -19,7 +19,7 @@ find_person
 
 find_gesture
 {
-    wave testINFO08
-    punch testINFO09
+    wave testINFO8
+    punch testINFO9
     peace_sign testINFO10
 }
