@@ -24,6 +24,9 @@
 #include "../include/wm_visionKernel/visionNodes/grayscale_node.h"
 #include "../include/wm_visionKernel/visionNodes/threshold_node.h"
 #include "../include/wm_visionKernel/visionNodes/openni_node.h"
+#include "../include/wm_visionKernel/visionNodes/edge_detection_node.h"
+#include "../include/wm_visionKernel/visionNodes/line_detection_node.h"
+
 
 /**
  * Constructor

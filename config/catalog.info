@@ -1,6 +1,6 @@
 find_object_boundingbox
 {
-    door testINFO
+    door close_door
     glass testINFO2
     vase testINFO3
 }

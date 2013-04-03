@@ -44,6 +44,8 @@ add_library(lib${PROJECT_NAME}Nodes SHARED
   src/wm_visionKernel/visionNodes/grayscale_node.cc
   src/wm_visionKernel/visionNodes/openni_node.cc
   src/wm_visionKernel/visionNodes/threshold_node.cc
+  src/wm_visionKernel/visionNodes/edge_detection_node.cc
+  src/wm_visionKernel/visionNodes/line_detection_node.cc
   src/wm_visionKernel/visionNodes/output_object_detail_node.cc
   src/wm_visionKernel/visionNodes/output_object_boundingbox_node.cc
   src/wm_visionKernel/visionNodes/output_person_node.cc
