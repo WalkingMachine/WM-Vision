@@ -18,6 +18,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/gpu/gpu.hpp>
+#include <boost/lexical_cast.hpp>
 
 Data LineDetectionNode::Function(std::map<std::string, Data>  *input_data) {
   Data *data = &input_data->at("input");
@@ -29,17 +30,23 @@ Data LineDetectionNode::Function(std::map<std::string, Data>  *input_data) {
 	//Create output ...
 	cv::vector<cv::Vec4i> lines;
     std::shared_ptr<cv::Mat> output_image(
-        new cv::Mat(data->data<cv::Mat>()->cols,
-                    data->data<cv::Mat>()->rows,
-                    CV_MAKETYPE(data->data<cv::Mat>()->depth(), 1)));
+        new cv::Mat(data->data<cv::Mat>()->rows,
+                    data->data<cv::Mat>()->cols,
+                    CV_8U));
 
-    cv::HoughLinesP(*data->data<cv::Mat>(), lines, 1, CV_PI/180, 80, 30, 10);
+    cv::HoughLinesP(*data->data<cv::Mat>(),
+    		        lines,
+    		        boost::lexical_cast<double>(parameters()["Rho"]),
+    		        CV_PI/boost::lexical_cast<double>(parameters()["Theta"]),
+    		        boost::lexical_cast<int>(parameters()["Threshold"]),
+    		        boost::lexical_cast<double>(parameters()["MinLineLength"]),
+    		        boost::lexical_cast<double>(parameters()["MaxLineGap"]));
 
-    output_image->setTo(cv::Scalar(0));
+    output_image->setTo(0);  // Black image
     for(size_t i = 0; i < lines.size(); i++)
 	{
 		cv::line(*output_image, cv::Point(lines[i][0], lines[i][1]),
-				 cv::Point(lines[i][2], lines[i][3]), cv::Scalar(255), 3, 8);
+				 cv::Point(lines[i][2], lines[i][3]), cv::Scalar(255), 1, 8);
 	}
 
     output_data.set_data(output_image);

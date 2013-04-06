@@ -18,6 +18,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/gpu/gpu.hpp>
+#include <boost/lexical_cast.hpp>
 
 
 Data EdgeDetectionNode::Function(std::map<std::string, Data>  *input_data) {
@@ -31,13 +32,21 @@ Data EdgeDetectionNode::Function(std::map<std::string, Data>  *input_data) {
 	  std::shared_ptr<cv::Mat> output_image(
 	          new cv::Mat(data->data<cv::Mat>()->cols,
 	                      data->data<cv::Mat>()->rows,
-	                      CV_MAKETYPE(data->data<cv::Mat>()->depth(), 1)));
+	                      CV_8U));
 
 	  //Blur input image
-	  cv::blur(*data->data<cv::Mat>(), *output_image, cv::Size(3,3));
+	  cv::blur(*data->data<cv::Mat>(),
+			   *output_image,
+			   cv::Size(boost::lexical_cast<int>(parameters()["BlurKWidth"]),
+					    boost::lexical_cast<int>(parameters()["BlurKHeight"])));
 
 	  //Find edge
-	  cv::Canny(*output_image, *output_image, 50, 50*3, 3);
+	  cv::Canny(*output_image,
+			  	*output_image,
+			    boost::lexical_cast<int>(parameters()["Threshold1"]),
+			    boost::lexical_cast<int>(parameters()["Threshold2"]),
+			    3,
+			    parameters()["L2gradient"] == "true");
 	  output_data.set_data(output_image);
   }
 

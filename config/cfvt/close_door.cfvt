@@ -1,72 +1,46 @@
-OpenniNode
-{
-    id inputImage
-    debug ImageDebugNode
-    dependence
-    {
-    
-    }
-    parameter
-    {
-    	IsOnCUDA false
-    	TopicRGB /camera/rgb/image_mono
-    }
-}
-
 EdgeDetectionNode
 {
     id edgeDetection
     debug ImageDebugNode
     dependence
     {
-    	input inputImage
+        input inputImage
     }
     parameter
     {
-    	IsOnCUDA false
+        BlurKHeight 3
+        BlurKWidth 3
+        IsOnCUDA false
+        L2gradient true
+        Threshold1 50
+        Threshold2 200
     }
 }
-
+OpenniNode
+{
+    id inputImage
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+        TopicRGB /camera/rgb/image_mono
+    }
+}
 LineDetectionNode
 {
     id lineDetection
     debug ImageDebugNode
     dependence
     {
-    	input edgeDetection
+        input edgeDetection
     }
     parameter
     {
-    	IsOnCUDA false
+        IsOnCUDA false
+        MaxLineGap 20
+        MinLineLength 10
+        Rho 1
+        Theta 180
+        Threshold 80
     }
 }
-
-;ThresholdNode
-;{
-;    id thresholdAlgorithm
-;    debug ImageDebugNode
-;    dependence
-;    {
-;    	input algorithmGray
-;    }
-;    parameter
-;    {
-;    	IsOnCUDA false
-;    	Threshold 128
-;    	MaximumValue 255
-;    	ThresholdType THRESH_BINARY
-;    }
-;}
-
-;OutputObjectBoundingboxNode
-;{
-;    id output
-;    dependence
-;    {
-;    	input edgeDetection
-;    }
-;    parameter
-;    {
-;
-;    }
-;}
