@@ -28,33 +28,34 @@ include_directories(cfvt include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${
 link_directories(${catkin_LINK_DIRS})
 
 add_library(lib${PROJECT_NAME} SHARED
-  src/wm_visionKernel/vision_node.cc
-  src/wm_visionKernel/vision_debug_node.cc
-  src/wm_visionKernel/vision_tree.cc
-  src/wm_visionKernel/vision_parser.cc
-  include/wm_visionKernel/data.h
-  include/wm_visionKernel/thread_safe_queue.h
-  include/wm_visionKernel/vision_node_factory.h
-  include/wm_visionKernel/input_manager.h
-  include/wm_visionKernel/input.h
-  include/wm_visionKernel/input_manager.h
+  src/vision_kernel/vision_interface.cc
+  src/vision_kernel/vision_node.cc
+  src/vision_kernel/vision_debug_node.cc
+  src/vision_kernel/vision_tree.cc
+  src/vision_kernel/vision_parser.cc
+  include/vision_kernel/data.h
+  include/vision_kernel/thread_safe_queue.h
+  include/vision_kernel/vision_node_factory.h
+  include/vision_kernel/input_manager.h
+  include/vision_kernel/input.h
+  include/vision_kernel/input_manager.h
   )
   
 add_library(lib${PROJECT_NAME}Nodes SHARED
-  src/wm_visionKernel/visionNodes/grayscale_node.cc
-  src/wm_visionKernel/visionNodes/openni_node.cc
-  src/wm_visionKernel/visionNodes/threshold_node.cc
-  src/wm_visionKernel/visionNodes/edge_detection_node.cc
-  src/wm_visionKernel/visionNodes/line_detection_node.cc
-  src/wm_visionKernel/visionNodes/output_object_detail_node.cc
-  src/wm_visionKernel/visionNodes/output_object_boundingbox_node.cc
-  src/wm_visionKernel/visionNodes/output_person_node.cc
-  src/wm_visionKernel/visionNodes/output_gesture_node.cc
-  src/wm_visionKernel/vision_debug_nodes/image_debug_node.cc
+  src/vision_kernel/vision_nodes/grayscale_node.cc
+  src/vision_kernel/vision_nodes/openni_node.cc
+  src/vision_kernel/vision_nodes/threshold_node.cc
+  src/vision_kernel/vision_nodes/edge_detection_node.cc
+  src/vision_kernel/vision_nodes/line_detection_node.cc
+  src/vision_kernel/vision_nodes/output_object_detail_node.cc
+  src/vision_kernel/vision_nodes/output_object_boundingbox_node.cc
+  src/vision_kernel/vision_nodes/output_person_node.cc
+  src/vision_kernel/vision_nodes/output_gesture_node.cc
+  src/vision_kernel/vision_debug_nodes/image_debug_node.cc
   )
  
 add_executable(${PROJECT_NAME}
-  src/vision_interface.cc
+  src/vision_kernel.cc
   )
   
 target_link_libraries(lib${PROJECT_NAME}
@@ -72,7 +73,8 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
   lib${PROJECT_NAME}
-  lib${PROJECT_NAME}Nodes)
+  lib${PROJECT_NAME}Nodes
+  )
  
 install(TARGETS ${PROJECT_NAME}
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
