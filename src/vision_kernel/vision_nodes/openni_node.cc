@@ -33,7 +33,7 @@ void OpenniNode::Init() {
  * @param input_data
  * @return cv::Mat image
  */
-Data OpenniNode::Function(std::map<std::string, Data>  *input_data) {
+Data OpenniNode::Function(InputData input_data) {
   std::shared_ptr<cv::Mat> input_image(new cv::Mat);
 
   while(!InputManager<sensor_msgs::Image>::GetInstance().has_data(parameters()["TopicRGB"])){

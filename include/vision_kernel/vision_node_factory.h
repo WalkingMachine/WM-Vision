@@ -48,10 +48,7 @@ struct VisionNodeFactory {
     if (iterator == map()->end())
       return 0;
 
-    // TODO(Keaven Martin) chang test
-    std::shared_ptr<VisionNode> test(iterator->second());
-
-    return test;
+    return std::shared_ptr<VisionNode>(iterator->second());
   }
 
  protected:

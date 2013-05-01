@@ -27,7 +27,7 @@ class OutputGestureNode : public VisionNode {
   OutputGestureNode();
   virtual ~OutputGestureNode();
 
-  Data Function(std::map<std::string, Data> *input_data);
+  Data Function(InputData input_data);
   void Init();
 
  private:

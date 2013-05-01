@@ -28,6 +28,7 @@
 class VisionNode {
  public:
   // Type definition
+  typedef std::shared_ptr<std::map<std::string, std::shared_ptr<Data>>> InputData;
   typedef std::map<std::string, std::string> Dependences;
   typedef std::map<std::string, std::string> Parameters;
 
@@ -51,14 +52,14 @@ class VisionNode {
                                  std::shared_ptr<Data>)> callback_function);
 
   bool IsValid();
-  void StartOneIteration(std::map<std::string, Data> *input_data);
-  virtual void Thread(std::map<std::string, Data> *input_data);
+  void StartOneIteration(InputData input_data);
+  virtual void Thread(InputData input_data);
   virtual void Init() {};
 
  protected:
   void call_tree_callback_function(std::shared_ptr<VisionNode> vision_node,
                                    std::shared_ptr<Data> data);
-  virtual Data Function(std::map<std::string, Data> *input_data) = 0;
+  virtual Data Function(InputData input_data) = 0;
 
  private:
   boost::thread *thread_;

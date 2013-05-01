@@ -35,7 +35,6 @@
 VisionTree::VisionTree(const std::string &name, const float &wanted_frequency) {
   must_stop_ = true;
   thread_ = nullptr;
-  queue_ = nullptr;
 
   set_name(name);
   set_wanted_frequency(wanted_frequency);
@@ -113,12 +112,11 @@ bool VisionTree::IsValid() {
  * @param visionNode
  * @param outputData
  */
-// TODO(Keaven Martin) Change visionNode to vision_node
-void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> visionNode,
+void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                                   std::shared_ptr<Data> node_output_data) {
   // Add visionNode and data in Queue
-  NodeThreadSafeQueue::NodeWithData node(visionNode, node_output_data);
-  queue_->Enqueue(node);
+  NodeThreadSafeQueue::NodeWithData node(vision_node, node_output_data);
+  queue_.Enqueue(node);
 }
 
 /**
@@ -127,7 +125,6 @@ void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> visionNode,
 void VisionTree::Start() {
   // TODO(Keaven Martin) Valid thread is not running
   must_stop_ = false;
-  queue_ = new NodeThreadSafeQueue;
   thread_ = new std::thread(boost::bind(&VisionTree::Thread, this));
 }
 
@@ -146,7 +143,8 @@ void VisionTree::Stop() {
       thread_->join();
 
     delete thread_;
-    delete queue_;
+
+    queue_.Clear();
   }
 }
 
@@ -238,7 +236,7 @@ void VisionTree::Process() {
   bool continu = true;
 
   while (continu) {
-    older_node = queue_->Dequeue();
+    older_node = queue_.Dequeue();
     vision_nodes_finished_with_data.insert(older_node);
 
     // If all nodes was finished
@@ -269,14 +267,14 @@ void VisionTree::Process() {
             }
 
             if (vision_node_iteration->dependences().size() == number_node_with_this_dependence + number_node_with_finished_dependence) {
-              std::map<std::string, Data> *input_data = new std::map<std::string, Data>;
+              VisionNode::InputData input_data;
 
               for(auto &value : vision_node_iteration->dependences()) {
                 for(auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
                   if (value.second.data() == vision_node_finished_iteration.first->id()) {
-                    input_data->insert(std::pair<std::string, Data>(
+                    input_data->insert(std::pair<std::string, std::shared_ptr<Data>>(
                                           value.first.data(),
-                                          *vision_node_finished_iteration.second));
+                                          vision_node_finished_iteration.second));
                   }
                 }
               }

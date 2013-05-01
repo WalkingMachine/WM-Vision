@@ -23,8 +23,8 @@
 OutputObjectDetailNode::OutputObjectDetailNode() {
 }
 
-Data OutputObjectDetailNode::Function(std::map<std::string, Data>  *input_data) {
-  Data *data = &input_data->at("input");
+Data OutputObjectDetailNode::Function(InputData input_data) {
+  std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
 
   std_msgs::Header header;

@@ -26,7 +26,7 @@ class OutputPersonNode : public VisionNode {
   OutputPersonNode();
   virtual ~OutputPersonNode();
 
-  Data Function(std::map<std::string, Data> *input_data);
+  Data Function(InputData input_data);
   void Init();
 
  private:

@@ -25,7 +25,7 @@
 
   class EdgeDetectionNode: public VisionNode {
     public:
-      Data Function(std::map<std::string, Data> *input_data);
+      Data Function(InputData input_data);
 
     private:
       REGISTER_DEC_TYPE(EdgeDetectionNode);

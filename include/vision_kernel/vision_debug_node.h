@@ -32,10 +32,10 @@ class VisionDebugNode : public VisionNode {
 
   void CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                         std::shared_ptr<Data> output_data);
-  virtual Data Function(std::map<std::string, Data> *input_data) = 0;
+  virtual Data Function(InputData input_data) = 0;
   virtual void Init() {};
 
-  void Thread(std::map<std::string, Data> *input_data);
+  void Thread(InputData input_data);
 
  private:
   std::shared_ptr<VisionNode> vision_node_;

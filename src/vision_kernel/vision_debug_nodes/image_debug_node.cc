@@ -20,8 +20,8 @@
 #include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
 
-Data ImageDebugNode::Function(std::map<std::string, Data>  *input_data) {
-  Data *data = &input_data->at("input");
+Data ImageDebugNode::Function(InputData input_data) {
+  std::shared_ptr<Data> data = input_data->at("input");
 
   std_msgs::Header header;
       int encode_number = data->data<cv::Mat>()->type();

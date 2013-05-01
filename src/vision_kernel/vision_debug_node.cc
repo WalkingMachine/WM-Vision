@@ -38,9 +38,9 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
   node_handle.getParamCached("debug_mode", debug);
 
   if (debug) {
-    std::map<std::string, Data> data;
-    data.insert(std::pair<std::string, Data>("input", *output_data));
-    Function(&data);
+    InputData data;
+    data->insert(std::pair<std::string, std::shared_ptr<Data>>("input", output_data));
+    Function(data);
   }
 
   call_tree_callback_function(vision_node, output_data);
@@ -50,6 +50,6 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
  * Debug Node thread
  * @param input_data
  */
-void VisionDebugNode::Thread(std::map<std::string, Data> *input_data) {
+void VisionDebugNode::Thread(InputData input_data) {
   vision_node_->StartOneIteration(input_data);
 }

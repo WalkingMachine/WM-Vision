@@ -26,7 +26,7 @@ class OutputObjectBoundingboxNode : public VisionNode {
   OutputObjectBoundingboxNode(){};
   virtual ~OutputObjectBoundingboxNode();
 
-  Data Function(std::map<std::string, Data> *input_data);
+  Data Function(InputData input_data);
   void Init();
 
  private:

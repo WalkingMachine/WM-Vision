@@ -43,7 +43,7 @@ class VisionTree {
                const Parameters &parameters,
                const std::string &debug_node = "");
   bool IsValid();
-  void CallbackFunction(std::shared_ptr<VisionNode> visionNode,
+  void CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                         std::shared_ptr<Data> node_output_data);
   void Start();
   void Stop();
@@ -58,7 +58,7 @@ class VisionTree {
  private:
   std::string name_;
   std::vector<std::shared_ptr<VisionNode>> vision_nodes_;
-  NodeThreadSafeQueue *queue_;
+  NodeThreadSafeQueue queue_;
   std::thread *thread_;
   bool must_stop_;
   float wanted_frequency_;

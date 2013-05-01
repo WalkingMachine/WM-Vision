@@ -110,7 +110,7 @@ bool VisionNode::IsValid() {
  * Start the node function one time only
  * @param input_data
  */
-void VisionNode::StartOneIteration(std::map<std::string, Data> *input_data) {
+void VisionNode::StartOneIteration(InputData input_data) {
   if (thread_ != nullptr)
       thread_->join();
 
@@ -125,9 +125,8 @@ void VisionNode::StartOneIteration(std::map<std::string, Data> *input_data) {
  * Node's thread
  * @param input_data
  */
-void VisionNode::Thread(std::map<std::string, Data> *input_data) {
+void VisionNode::Thread(InputData input_data) {
   std::shared_ptr<Data> output_data(new Data(Function(input_data)));
-  delete input_data;
 
   std::shared_ptr<VisionNode> this_vision_node(this);
   // Call callback function

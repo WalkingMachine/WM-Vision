@@ -19,8 +19,8 @@
 #include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
 
-Data OutputObjectBoundingboxNode::Function(std::map<std::string, Data>  *input_data) {
-  Data *data = &input_data->at("input");
+Data OutputObjectBoundingboxNode::Function(InputData input_data) {
+  std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
   std_msgs::Header header;
 

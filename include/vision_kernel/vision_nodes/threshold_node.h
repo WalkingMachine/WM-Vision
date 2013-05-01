@@ -25,7 +25,7 @@
 
   class ThresholdNode: public VisionNode {
     public:
-      Data Function(std::map<std::string, Data> *input_data);
+      Data Function(InputData input_data);
 
     private:
       int ThresholdTypeStringToInt(const std::string &threshold_type);

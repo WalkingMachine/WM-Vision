@@ -24,8 +24,8 @@
  * @param input_data
  * @return input_data
  */
-Data GrayscaleNode::Function(std::map<std::string, Data>  *input_data) {
-  Data *data = &input_data->at("input");
+Data GrayscaleNode::Function(InputData input_data) {
+  std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
 
   if (parameters()["IsOnCUDA"] == "true") {

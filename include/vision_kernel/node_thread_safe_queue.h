@@ -28,11 +28,7 @@ class NodeThreadSafeQueue {
  public:
   typedef std::pair<std::shared_ptr<VisionNode>, std::shared_ptr<Data>> NodeWithData;
   ~NodeThreadSafeQueue() {
-    condition_.notify_one();
-
-    while (!queue_.empty()) {
-      queue_.pop();
-    }
+    Clear();
   }
 
   void Enqueue(NodeWithData node_with_data) {
@@ -61,6 +57,14 @@ class NodeThreadSafeQueue {
     queue_.pop();
 
     return result;
+  }
+
+  void Clear() {
+    std::unique_lock<std::mutex> lock(mutex_);
+
+    while (!queue_.empty()) {
+      queue_.pop();
+    }
   }
 
  private:

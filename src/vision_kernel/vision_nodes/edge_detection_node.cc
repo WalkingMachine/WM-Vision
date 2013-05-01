@@ -21,8 +21,8 @@
 #include <boost/lexical_cast.hpp>
 
 
-Data EdgeDetectionNode::Function(std::map<std::string, Data>  *input_data) {
-  Data *data = &input_data->at("input");
+Data EdgeDetectionNode::Function(InputData input_data) {
+  std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
 
   if (parameters()["IsOnCUDA"] == "true") {
