@@ -13,7 +13,6 @@
  *
  */
 
-// TODO(Keaven) *data_type_ t shared_ptr
 #ifndef WM_VISION_INCLUDE_VISION_KERNEL_DATA_H_
 #define WM_VISION_INCLUDE_VISION_KERNEL_DATA_H_
 
@@ -24,6 +23,10 @@ class Data {
  public:
   Data() {
     data_type_ = &typeid(void);
+  }
+
+  ~Data() {
+    delete data_type_;
   }
 
   template<class type>

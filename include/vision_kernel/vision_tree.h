@@ -19,12 +19,13 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <ros/ros.h>
 
 #include "vision_node.h"
-#include "thread_safe_queue.h"
+#include "node_thread_safe_queue.h"
 #include "data.h"
 
 // TODO(Keaven Martin) Add mutex lock when we add some nodes
@@ -42,7 +43,8 @@ class VisionTree {
                const Parameters &parameters,
                const std::string &debug_node = "");
   bool IsValid();
-  void CallbackFunction(VisionNode* visionNode,const Data &node_output_data);
+  void CallbackFunction(std::shared_ptr<VisionNode> visionNode,
+                        std::shared_ptr<Data> node_output_data);
   void Start();
   void Stop();
   void Thread();
@@ -55,8 +57,8 @@ class VisionTree {
 
  private:
   std::string name_;
-  std::vector<VisionNode*> vision_nodes_;
-  ThreadSafeQueue<VisionNode*> *queue_;
+  std::vector<std::shared_ptr<VisionNode>> vision_nodes_;
+  NodeThreadSafeQueue *queue_;
   std::thread *thread_;
   bool must_stop_;
   float wanted_frequency_;
@@ -64,6 +66,7 @@ class VisionTree {
   std::mutex must_stop_mutex_;
   std::mutex wanted_frequency_mutex_;
   std::mutex current_frequency_mutex_;
+  int shared_ptr;
 
   void Process();
 };

@@ -60,7 +60,7 @@ Data ThresholdNode::Function(std::map<std::string, Data>  *input_data) {
   return output_data;
 }
 
-int ThresholdNode::ThresholdTypeStringToInt(std::string threshold_type) {
+int ThresholdNode::ThresholdTypeStringToInt(const std::string &threshold_type) {
   int threshold_type_int = cv::THRESH_BINARY;
 
   if(threshold_type == "THRESH_BINARY")

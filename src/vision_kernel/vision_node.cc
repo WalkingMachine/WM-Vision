@@ -3,13 +3,13 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 12/06/2012
  *
  * Programmer: Keaven Martin
  *
- * Description:  Tree's children
+ * Description: Tree's children
  *
  */
 
@@ -47,7 +47,7 @@ std::string VisionNode::id() {
  * Set node identifier
  * @param id
  */
-void VisionNode::set_id(std::string id) {
+void VisionNode::set_id(const std::string &id) {
   id_ = id;
 }
 
@@ -63,7 +63,7 @@ VisionNode::Parameters VisionNode::parameters() {
  * Set node parameters
  * @param parameters
  */
-void VisionNode::set_parameters(Parameters parameters) {
+void VisionNode::set_parameters(const Parameters &parameters) {
   parameters_ = parameters;
 }
 
@@ -79,7 +79,7 @@ VisionNode::Dependences VisionNode::dependences() {
  * Set node dependences
  * @param dependences
  */
-void VisionNode::set_dependences(Dependences dependences) {
+void VisionNode::set_dependences(const Dependences &dependences) {
   dependences_ = dependences;
 }
 
@@ -87,12 +87,13 @@ std::string VisionNode::tree_name() {
   return tree_name_;
 }
 
-void VisionNode::set_tree_name(std::string tree_name) {
+void VisionNode::set_tree_name(const std::string &tree_name) {
   tree_name_ = tree_name;
 }
 
 void VisionNode::set_tree_callback_function_(
-    boost::function<void(VisionNode*, Data)> callback_function) {
+    boost::function<void(std::shared_ptr<VisionNode>,
+                         std::shared_ptr<Data>)> callback_function) {
   tree_callback_function_ = callback_function;
 }
 
@@ -125,14 +126,16 @@ void VisionNode::StartOneIteration(std::map<std::string, Data> *input_data) {
  * @param input_data
  */
 void VisionNode::Thread(std::map<std::string, Data> *input_data) {
-  Data outputData;
-  outputData = Function(input_data);
+  std::shared_ptr<Data> output_data(new Data(Function(input_data)));
   delete input_data;
 
+  std::shared_ptr<VisionNode> this_vision_node(this);
   // Call callback function
-  tree_callback_function_(this, outputData);
+  tree_callback_function_(this_vision_node, output_data);
 }
 
-void VisionNode::call_tree_callback_function(VisionNode* vision_node, Data data) {
+void VisionNode::call_tree_callback_function(
+    std::shared_ptr<VisionNode> vision_node,
+    std::shared_ptr<Data> data) {
   tree_callback_function_(vision_node, data);
 }

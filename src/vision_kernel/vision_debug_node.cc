@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 26/02/2013
  *
@@ -25,20 +25,21 @@ VisionDebugNode::~VisionDebugNode() {
 
 }
 
-void VisionDebugNode::set_vision_node(VisionNode* vision_node) {
+void VisionDebugNode::set_vision_node(std::shared_ptr<VisionNode> vision_node) {
   vision_node_ = vision_node;
 }
 
-void VisionDebugNode::CallbackFunction(VisionNode* vision_node, Data output_data) {
+void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
+                                       std::shared_ptr<Data> output_data) {
   bool debug;
 
   ros::NodeHandle node_handle;
 
   node_handle.getParamCached("debug_mode", debug);
 
-  if(debug) {
+  if (debug) {
     std::map<std::string, Data> data;
-    data.insert(std::pair<std::string, Data>("input",output_data));
+    data.insert(std::pair<std::string, Data>("input", *output_data));
     Function(&data);
   }
 

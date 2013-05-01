@@ -49,11 +49,7 @@ VisionTree::~VisionTree() {
   Stop();
 
   // Delete content in visonNodes vector
-  for (std::vector<VisionNode*>::iterator it = vision_nodes_.begin();
-      it != vision_nodes_.end(); ) {
-    delete *it;
-    it = vision_nodes_.erase(it);
-  }
+  vision_nodes_.clear();
 }
 
 /**
@@ -69,7 +65,8 @@ bool VisionTree::AddNode(const std::string &type,
                          const Dependences &dependences,
                          const Parameters &parameters,
                          const std::string &debug_node) {
-  VisionNode *vision_node = VisionNodeFactory::CreateInstance(type);
+  std::shared_ptr<VisionNode> vision_node =
+      VisionNodeFactory::CreateInstance(type);
 
   vision_node->set_id(id);
   vision_node->set_tree_name(name());
@@ -81,7 +78,7 @@ bool VisionTree::AddNode(const std::string &type,
           boost::bind(&VisionTree::CallbackFunction, this, _1, _2));
     vision_nodes_.push_back(vision_node);
   } else {
-    VisionDebugNode *vision_debug_node = (VisionDebugNode *)VisionNodeFactory::CreateInstance(debug_node);
+    std::shared_ptr<VisionDebugNode> vision_debug_node(std::static_pointer_cast<VisionDebugNode>(VisionNodeFactory::CreateInstance(debug_node)));
 
     vision_debug_node->set_id(id);
     vision_debug_node->set_tree_name(name());
@@ -91,7 +88,7 @@ bool VisionTree::AddNode(const std::string &type,
     vision_debug_node->set_tree_callback_function_(
               boost::bind(&VisionTree::CallbackFunction, this, _1, _2));
     vision_node->set_tree_callback_function_(
-              boost::bind(&VisionDebugNode::CallbackFunction, vision_debug_node, _1, _2));
+              boost::bind(&VisionDebugNode::CallbackFunction, vision_debug_node.get(), _1, _2));
     vision_debug_node->Init();
     vision_nodes_.push_back(vision_debug_node);
   }
@@ -116,9 +113,12 @@ bool VisionTree::IsValid() {
  * @param visionNode
  * @param outputData
  */
-void VisionTree::CallbackFunction(VisionNode* visionNode, const Data &node_output_data) {
+// TODO(Keaven Martin) Change visionNode to vision_node
+void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> visionNode,
+                                  std::shared_ptr<Data> node_output_data) {
   // Add visionNode and data in Queue
-  queue_->Enqueue(visionNode, node_output_data);
+  NodeThreadSafeQueue::NodeWithData node(visionNode, node_output_data);
+  queue_->Enqueue(node);
 }
 
 /**
@@ -127,7 +127,7 @@ void VisionTree::CallbackFunction(VisionNode* visionNode, const Data &node_outpu
 void VisionTree::Start() {
   // TODO(Keaven Martin) Valid thread is not running
   must_stop_ = false;
-  queue_ = new ThreadSafeQueue<VisionNode*>;
+  queue_ = new NodeThreadSafeQueue;
   thread_ = new std::thread(boost::bind(&VisionTree::Thread, this));
 }
 
@@ -195,8 +195,8 @@ void VisionTree::Thread() {
   ros::Rate frequency(wanted_frequency_);
   wanted_frequency_mutex_.unlock();
 
-  ros::Time currentTime;
-  ros::Time lastTime = ros::Time::now();
+  ros::Time current_time;
+  ros::Time last_time = ros::Time::now();
 
   do {
     Process();
@@ -204,14 +204,14 @@ void VisionTree::Thread() {
     // Sleep some time base on frequency
     frequency.sleep();
 
-    currentTime = ros::Time::now();
+    current_time = ros::Time::now();
 
     // Set current frequency (thread safe)
     current_frequency_mutex_.lock();
-      current_frequency_ = 1000000000.0 / (currentTime - lastTime).toNSec();
+      current_frequency_ = 1000000000.0 / (current_time - last_time).toNSec();
     current_frequency_mutex_.unlock();
 
-    lastTime = currentTime;
+    last_time = current_time;
 
     // Get the "must stop" state (thread safe)
     must_stop_mutex_.lock();
@@ -223,67 +223,65 @@ void VisionTree::Thread() {
 /**
  * Thread process for vision nodes gestion
  */
-// TODO(Keaven Martin) Comment
+// TODO(Keaven Martin) Comment and clean
 void VisionTree::Process() {
   // First time take no dependence nodes
-  for (VisionNode *it : vision_nodes_) {
-    if (it->dependences().empty()) {
-      it->StartOneIteration(nullptr);
+  for (auto &vision_node : vision_nodes_) {
+    if (vision_node->dependences().empty()) {
+      vision_node->StartOneIteration(nullptr);
     }
   }
 
-  VisionNode* visionNodeFinished;
-  std::map<VisionNode*, Data> visionNodesFinishedWithData;
+  NodeThreadSafeQueue::NodeWithData older_node;
+  std::map<std::shared_ptr<VisionNode>, std::shared_ptr<Data>> vision_nodes_finished_with_data;
 
   bool continu = true;
 
   while (continu) {
-    Data olderData;
-    visionNodeFinished = queue_->Dequeue(&olderData);
-    visionNodesFinishedWithData.insert(
-        std::pair<VisionNode*, Data>(visionNodeFinished, olderData));
+    older_node = queue_->Dequeue();
+    vision_nodes_finished_with_data.insert(older_node);
 
     // If all nodes was finished
-    if (visionNodesFinishedWithData.size() == vision_nodes_.size()) {
+    if (vision_nodes_finished_with_data.size() == vision_nodes_.size()) {
       continu = false;  // Quit
     } else {
-      for (VisionNode *vision_node_iteration : vision_nodes_) {
-        uint numberNodeWithThisDependence = 0;
-        uint numberNodeWithFinishedDependence = 0;
-        bool visionNodeAlreadyFinished = false;
+      for (auto &vision_node_iteration : vision_nodes_) {
+        uint number_node_with_this_dependence = 0;
+        uint number_node_with_finished_dependence = 0;
+        bool vision_node_already_finished = false;
 
-        for (std::pair<VisionNode*, Data> vision_node_finished_iteration : visionNodesFinishedWithData) {
+        for (auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
           if (vision_node_iteration->id() == vision_node_finished_iteration.first->id()) {
-            visionNodeAlreadyFinished = true;
+            vision_node_already_finished = true;
           }
         }
 
-        if(!visionNodeAlreadyFinished) {
-          for (std::pair<std::string, std::string> vision_node_dependence_iteration : vision_node_iteration->dependences()) {
-            if (visionNodeFinished->id() == vision_node_dependence_iteration.second.data()) {
-              numberNodeWithThisDependence++;
+        if(!vision_node_already_finished) {
+          for (auto &vision_node_dependence_iteration : vision_node_iteration->dependences()) {
+            if (older_node.first->id() == vision_node_dependence_iteration.second.data()) {
+              number_node_with_this_dependence++;
             } else {
-              for (std::pair<VisionNode*, Data> vision_node_finished_iteration : visionNodesFinishedWithData) {
+              for (auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
                 if (vision_node_dependence_iteration.second.data() == vision_node_finished_iteration.first->id()) {
-                  numberNodeWithFinishedDependence++;
+                  number_node_with_finished_dependence++;
                 }
               }
             }
 
-            if (vision_node_iteration->dependences().size() == numberNodeWithThisDependence + numberNodeWithFinishedDependence) {
-              std::map<std::string, Data> *inputData = new std::map<std::string, Data>;
+            if (vision_node_iteration->dependences().size() == number_node_with_this_dependence + number_node_with_finished_dependence) {
+              std::map<std::string, Data> *input_data = new std::map<std::string, Data>;
 
-              for(std::pair<std::string, std::string> value : vision_node_iteration->dependences()) {
-                for(std::pair<VisionNode*, Data> vision_node_finished_iteration : visionNodesFinishedWithData) {
+              for(auto &value : vision_node_iteration->dependences()) {
+                for(auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
                   if (value.second.data() == vision_node_finished_iteration.first->id()) {
-                    inputData->insert(std::pair<std::string, Data>(
+                    input_data->insert(std::pair<std::string, Data>(
                                           value.first.data(),
-                                          vision_node_finished_iteration.second));
+                                          *vision_node_finished_iteration.second));
                   }
                 }
               }
 
-              vision_node_iteration->StartOneIteration(inputData);
+              vision_node_iteration->StartOneIteration(input_data);
             }
           }
         }
@@ -291,5 +289,5 @@ void VisionTree::Process() {
     }
   }
 
-  visionNodesFinishedWithData.clear();
+  vision_nodes_finished_with_data.clear();
 }

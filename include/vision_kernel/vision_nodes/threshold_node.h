@@ -28,7 +28,7 @@
       Data Function(std::map<std::string, Data> *input_data);
 
     private:
-      int ThresholdTypeStringToInt(std::string threshold_type);
+      int ThresholdTypeStringToInt(const std::string &threshold_type);
       REGISTER_DEC_TYPE(ThresholdNode);
   };
 

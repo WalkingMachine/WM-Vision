@@ -19,6 +19,7 @@
 #include <thread>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "vision_node.h"
 
@@ -41,13 +42,16 @@ struct VisionNodeFactory {
  public:
   typedef std::map<std::string, VisionNode*(*)()> MapType;
 
-  static VisionNode* CreateInstance(std::string const& s) {
+  static std::shared_ptr<VisionNode> CreateInstance(std::string const& s) {
     MapType::iterator iterator = map()->find(s);
 
     if (iterator == map()->end())
       return 0;
 
-    return iterator->second();
+    // TODO(Keaven Martin) chang test
+    std::shared_ptr<VisionNode> test(iterator->second());
+
+    return test;
   }
 
  protected:

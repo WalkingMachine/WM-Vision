@@ -34,7 +34,7 @@ add_library(lib${PROJECT_NAME} SHARED
   src/vision_kernel/vision_tree.cc
   src/vision_kernel/vision_parser.cc
   include/vision_kernel/data.h
-  include/vision_kernel/thread_safe_queue.h
+  include/vision_kernel/node_thread_safe_queue.h
   include/vision_kernel/vision_node_factory.h
   include/vision_kernel/input_manager.h
   include/vision_kernel/input.h

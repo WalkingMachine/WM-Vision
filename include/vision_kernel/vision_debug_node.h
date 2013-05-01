@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 26/02/2013
  *
@@ -13,30 +13,32 @@
  *
  */
 
-#ifndef WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_DEBUG_NODE_H_
-#define WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_DEBUG_NODE_H_
+#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_DEBUG_NODE_H_
+#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_DEBUG_NODE_H_
 
-  #include <string>
-  #include <map>
+#include <string>
+#include <map>
+#include <memory>
 
-  #include "vision_node.h"
+#include "vision_node.h"
 
-  class VisionDebugNode : public VisionNode {
-    public:
-      // Constructor and Destructor;
-      VisionDebugNode();
-      virtual ~VisionDebugNode();
+class VisionDebugNode : public VisionNode {
+ public:
+  // Constructor and Destructor;
+  VisionDebugNode();
+  virtual ~VisionDebugNode();
 
-      void set_vision_node(VisionNode* vision_node);
+  void set_vision_node(std::shared_ptr<VisionNode> vision_node);
 
-      void CallbackFunction(VisionNode* vision_node, Data output_data);
-      virtual Data Function(std::map<std::string, Data> *input_data) = 0;
-      virtual void Init() {};
+  void CallbackFunction(std::shared_ptr<VisionNode> vision_node,
+                        std::shared_ptr<Data> output_data);
+  virtual Data Function(std::map<std::string, Data> *input_data) = 0;
+  virtual void Init() {};
 
-      void Thread(std::map<std::string, Data> *input_data);
+  void Thread(std::map<std::string, Data> *input_data);
 
-    private:
-      VisionNode* vision_node_;
-  };
+ private:
+  std::shared_ptr<VisionNode> vision_node_;
+};
 
-#endif  // WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_DEBUG_NODE_H_
+#endif  // WM_VISION_INCLUDE_VISION_KERNEL_VISION_DEBUG_NODE_H_

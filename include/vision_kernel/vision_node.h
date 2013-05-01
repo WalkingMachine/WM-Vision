@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 12/06/2012
  *
@@ -13,57 +13,63 @@
  *
  */
 
-#ifndef WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_NODE_H_
-#define WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_NODE_H_
+#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODE_H_
+#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODE_H_
 
-  #include <boost/thread.hpp>
-  #include <string>
-  #include <map>
+#include <boost/thread.hpp>
+#include <string>
+#include <map>
+#include <memory>
 
-  #include "data.h"
+#include "data.h"
 
-  class VisionNode {
-    public:
-      // Type definition
-      typedef std::map<std::string, std::string> Dependences;
-      typedef std::map<std::string, std::string> Parameters;
+// TODO(Keaven) pointer
 
-      // Constructor and Destructor
-      VisionNode();
-      virtual ~VisionNode();
+class VisionNode {
+ public:
+  // Type definition
+  typedef std::map<std::string, std::string> Dependences;
+  typedef std::map<std::string, std::string> Parameters;
 
-      // Getter
-      std::string id();
-      std::string tree_name();
-      Parameters parameters();
-      Dependences dependences();
+  // Constructor and Destructor
+  VisionNode();
+  virtual ~VisionNode();
 
-      // Setter
-      void set_id(std::string id);
-      void set_tree_name(std::string tree_name);
-      void set_parameters(Parameters parameters);
-      void set_dependences(Dependences dependences);
-      void set_tree_callback_function_(
-                boost::function<void(VisionNode*, Data)> callback_function);
+  // Getter
+  std::string id();
+  std::string tree_name();
+  Parameters parameters();
+  Dependences dependences();
 
-      bool IsValid();
-      void StartOneIteration(std::map<std::string, Data> *input_data);
-      virtual void Thread(std::map<std::string, Data> *input_data);
-      virtual void Init() {};
+  // Setter
+  void set_id(const std::string &id);
+  void set_tree_name(const std::string &tree_name);
+  void set_parameters(const Parameters &parameters);
+  void set_dependences(const Dependences &dependences);
+  void set_tree_callback_function_(
+            boost::function<void(std::shared_ptr<VisionNode>,
+                                 std::shared_ptr<Data>)> callback_function);
 
-    protected:
-      void call_tree_callback_function(VisionNode* vision_node, Data data);
-      virtual Data Function(std::map<std::string, Data> *input_data) = 0;
+  bool IsValid();
+  void StartOneIteration(std::map<std::string, Data> *input_data);
+  virtual void Thread(std::map<std::string, Data> *input_data);
+  virtual void Init() {};
 
-    private:
-      boost::thread* thread_;
-      boost::function<void(VisionNode*, Data)> tree_callback_function_;
+ protected:
+  void call_tree_callback_function(std::shared_ptr<VisionNode> vision_node,
+                                   std::shared_ptr<Data> data);
+  virtual Data Function(std::map<std::string, Data> *input_data) = 0;
 
-      // TODO(Keaven Martin) Add mutex on this data
-      std::string id_;
-      std::string tree_name_;
-      Parameters parameters_;
-      Dependences dependences_;
-  };
+ private:
+  boost::thread *thread_;
+  boost::function<void(std::shared_ptr<VisionNode>,
+                       std::shared_ptr<Data>)> tree_callback_function_;
 
-#endif  // WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_NODE_H_
+  // TODO(Keaven Martin) Add mutex on this data
+  std::string id_;
+  std::string tree_name_;
+  Parameters parameters_;
+  Dependences dependences_;
+};
+
+#endif  // WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODE_H_
