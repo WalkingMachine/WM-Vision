@@ -27,7 +27,7 @@ Data LineDetectionNode::Function(InputData input_data) {
   if (parameters()["IsOnCUDA"] == "true") {
 
   } else {
-	//Create output ...
+	std::shared_ptr<cv::vector<cv::Vec4i>> output_vector(new cv::vector<cv::Vec4i>);
 	cv::vector<cv::Vec4i> lines;
     std::shared_ptr<cv::Mat> output_image(
         new cv::Mat(data->data<cv::Mat>()->rows,
@@ -35,21 +35,21 @@ Data LineDetectionNode::Function(InputData input_data) {
                     CV_8U));
 
     cv::HoughLinesP(*data->data<cv::Mat>(),
-    		        lines,
+    		        *output_vector,
     		        boost::lexical_cast<double>(parameters()["Rho"]),
     		        CV_PI/boost::lexical_cast<double>(parameters()["Theta"]),
     		        boost::lexical_cast<int>(parameters()["Threshold"]),
     		        boost::lexical_cast<double>(parameters()["MinLineLength"]),
     		        boost::lexical_cast<double>(parameters()["MaxLineGap"]));
 
-    output_image->setTo(0);  // Black image
-    for(size_t i = 0; i < lines.size(); i++)
-	{
-		cv::line(*output_image, cv::Point(lines[i][0], lines[i][1]),
-				 cv::Point(lines[i][2], lines[i][3]), cv::Scalar(255), 1, 8);
-	}
+//    output_image->setTo(0);  // Black image
+//    for(size_t i = 0; i < lines.size(); i++)
+//	{
+//		cv::line(*output_image, cv::Point(lines[i][0], lines[i][1]),
+//				 cv::Point(lines[i][2], lines[i][3]), cv::Scalar(255), 1, 8);
+//	}
 
-    output_data.set_data(output_image);
+    output_data.set_data(output_vector);
   }
 
   return output_data;

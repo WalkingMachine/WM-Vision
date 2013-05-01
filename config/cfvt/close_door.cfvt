@@ -29,7 +29,7 @@ OpenniNode
 LineDetectionNode
 {
     id lineDetection
-    debug ImageDebugNode
+    debug ""
     dependence
     {
         input edgeDetection
@@ -42,5 +42,20 @@ LineDetectionNode
         Rho 1
         Theta 180
         Threshold 80
+    }
+}
+ParallelLinesNode
+{
+    id verticalLineDetection
+    debug ImageDebugNode
+    dependence
+    {
+        input lineDetection
+    }
+    parameter
+    {
+        Angle 90
+        AngleTolerance 10
+        IsOnCUDA false
     }
 }
