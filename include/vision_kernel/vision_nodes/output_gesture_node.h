@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 02/26/2013
  *
@@ -13,8 +13,8 @@
  *
  */
 
-#ifndef OUTPUT_GESTURE_NODE_H_
-#define OUTPUT_GESTURE_NODE_H_
+#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_GESTURE_NODE_H_
+#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_GESTURE_NODE_H_
 
 #include <ros/publisher.h>
 
@@ -24,7 +24,7 @@
 
 class OutputGestureNode : public VisionNode {
  public:
-  OutputGestureNode();
+  OutputGestureNode() {};
   virtual ~OutputGestureNode();
 
   Data Function(InputData input_data);
@@ -35,6 +35,6 @@ class OutputGestureNode : public VisionNode {
   REGISTER_DEC_TYPE(OutputGestureNode);
 };
 
-  REGISTER_DEF_TYPE(OutputGestureNode);
+REGISTER_DEF_TYPE(OutputGestureNode);
 
-#endif /* OUTPUT_GESTURE_NODE_H_ */
+#endif  // WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_GESTURE_NODE_H_

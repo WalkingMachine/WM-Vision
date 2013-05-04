@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 02/26/2013
  *
@@ -26,13 +26,16 @@ Data OutputObjectBoundingboxNode::Function(InputData input_data) {
 
 
   cv_bridge::CvImagePtr output_message(
-      new cv_bridge::CvImage(header, sensor_msgs::image_encodings::MONO8, *data->data<cv::Mat>()));
+      new cv_bridge::CvImage(header,
+                             sensor_msgs::image_encodings::MONO8,
+                             *data->data<cv::Mat>()));
+
   publisher_.publish(output_message);
 
   return output_data;
 }
 
-void OutputObjectBoundingboxNode::Init(){
+void OutputObjectBoundingboxNode::Init() {
   ros::NodeHandle node_handle;
   std::string topic_name = tree_name();
 
