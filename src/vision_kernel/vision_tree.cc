@@ -267,18 +267,15 @@ void VisionTree::Process() {
             }
 
             if (vision_node_iteration->dependences().size() == number_node_with_this_dependence + number_node_with_finished_dependence) {
-              VisionNode::InputData input_data;
+              VisionNode::InputData input_data(new std::map<std::string, std::shared_ptr<Data>>);
 
               for(auto &value : vision_node_iteration->dependences()) {
                 for(auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
                   if (value.second.data() == vision_node_finished_iteration.first->id()) {
-                    input_data->insert(std::pair<std::string, std::shared_ptr<Data>>(
-                                          value.first.data(),
-                                          vision_node_finished_iteration.second));
+                    (*input_data)[value.first.data()] = vision_node_finished_iteration.second;
                   }
                 }
               }
-
               vision_node_iteration->StartOneIteration(input_data);
             }
           }

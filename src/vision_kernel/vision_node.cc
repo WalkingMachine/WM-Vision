@@ -128,7 +128,7 @@ void VisionNode::StartOneIteration(InputData input_data) {
 void VisionNode::Thread(InputData input_data) {
   std::shared_ptr<Data> output_data(new Data(Function(input_data)));
 
-  std::shared_ptr<VisionNode> this_vision_node(this);
+  std::shared_ptr<VisionNode> this_vision_node(shared_from_this());
   // Call callback function
   tree_callback_function_(this_vision_node, output_data);
 }

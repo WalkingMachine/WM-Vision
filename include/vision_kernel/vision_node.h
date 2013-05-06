@@ -25,7 +25,7 @@
 
 // TODO(Keaven) pointer
 
-class VisionNode {
+class VisionNode : public std::enable_shared_from_this<VisionNode> {
  public:
   // Type definition
   typedef std::shared_ptr<std::map<std::string, std::shared_ptr<Data>>> InputData;

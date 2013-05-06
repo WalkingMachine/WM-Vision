@@ -61,6 +61,6 @@ Data OpenniNode::Function(InputData input_data) {
 }
 
 OpenniNode::~OpenniNode() {
-  InputManager<sensor_msgs::ImageConstPtr>::GetInstance().RemoveSubscriber(parameters()["TopicRGB"]);
+  InputManager<sensor_msgs::Image>::GetInstance().RemoveSubscriber(parameters()["TopicRGB"]);
 }
 
