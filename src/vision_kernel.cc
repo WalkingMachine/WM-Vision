@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
   ros::ServiceServer service = node_handle.advertiseService(
       ros::this_node::getName(),
-      &VisionInterface::CallbackTree,
+      &VisionInterface::CallbackFlow,
       &interface);
 
   ROS_INFO("vision_kernel initialized");

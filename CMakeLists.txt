@@ -11,7 +11,7 @@ find_package(OpenCV 2.4 REQUIRED)
 
 add_service_files(
   FILES
-  vision_interface_tree.srv
+  vision_interface_flow.srv
 )
 
 generate_messages(
@@ -31,7 +31,7 @@ add_library(lib${PROJECT_NAME} SHARED
   src/vision_kernel/vision_interface.cc
   src/vision_kernel/vision_node.cc
   src/vision_kernel/vision_debug_node.cc
-  src/vision_kernel/vision_tree.cc
+  src/vision_kernel/vision_flow.cc
   src/vision_kernel/vision_parser.cc
   include/vision_kernel/data.h
   include/vision_kernel/node_thread_safe_queue.h

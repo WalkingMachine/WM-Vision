@@ -9,7 +9,7 @@
  *
  * Programmer: Keaven Martin
  *
- * Description: Tree's children
+ * Description: Flow's children
  *
  */
 
@@ -38,16 +38,16 @@ class VisionNode : public std::enable_shared_from_this<VisionNode> {
 
   // Getter
   std::string id();
-  std::string tree_name();
+  std::string flow_name();
   Parameters parameters();
   Dependences dependences();
 
   // Setter
   void set_id(const std::string &id);
-  void set_tree_name(const std::string &tree_name);
+  void set_flow_name(const std::string &flow_name);
   void set_parameters(const Parameters &parameters);
   void set_dependences(const Dependences &dependences);
-  void set_tree_callback_function_(
+  void set_flow_callback_function_(
             boost::function<void(std::shared_ptr<VisionNode>,
                                  std::shared_ptr<Data>)> callback_function);
 
@@ -57,18 +57,18 @@ class VisionNode : public std::enable_shared_from_this<VisionNode> {
   virtual void Init() {};
 
  protected:
-  void call_tree_callback_function(std::shared_ptr<VisionNode> vision_node,
+  void call_flow_callback_function(std::shared_ptr<VisionNode> vision_node,
                                    std::shared_ptr<Data> data);
   virtual Data Function(InputData input_data) = 0;
 
  private:
   boost::thread *thread_;
   boost::function<void(std::shared_ptr<VisionNode>,
-                       std::shared_ptr<Data>)> tree_callback_function_;
+                       std::shared_ptr<Data>)> flow_callback_function_;
 
   // TODO(Keaven Martin) Add mutex on this data
   std::string id_;
-  std::string tree_name_;
+  std::string flow_name_;
   Parameters parameters_;
   Dependences dependences_;
 };

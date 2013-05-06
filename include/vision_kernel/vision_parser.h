@@ -10,7 +10,7 @@
  * Programmer: Julien Côté, Keaven Martin
  *
  * Description: VisionCfvtParser is used to parse a file which holds the path
- *              to the trees to execute.
+ *              to the flows to execute.
  *
  */
 
@@ -20,18 +20,18 @@
 #include <string>
 #include <map>
 
-#include "vision_tree.h"
+#include "vision_flow.h"
 
 namespace VisionParser{
   /**
    *  Fills a map with a pair of task_id and object_id to a path that points
-   *  to the corresponding configuration file to create the tree
+   *  to the corresponding configuration file to create the flow
    * @param path_map A reference to the map that needs to be filled
    */
-  void ParseCatalogCFVT(
+  void ParseCatalogCFVF(
       std::map<std::pair<std::string,std::string>, std::string> &path_map);
 
-  void ParseVisionTree(std::string file_path, VisionTree &tree);
+  void ParseVisionFlow(std::string file_path, VisionFlow &flow);
 
   class NodeParameterException : public std::exception {
     virtual const char* what() const throw() {

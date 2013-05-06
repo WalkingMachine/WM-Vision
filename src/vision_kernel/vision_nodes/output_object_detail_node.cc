@@ -37,7 +37,7 @@ Data OutputObjectDetailNode::Function(InputData input_data) {
 
 void OutputObjectDetailNode::Init() {
   ros::NodeHandle node_handle;
-  std::string topic_name= tree_name();
+  std::string topic_name= flow_name();
 
   publisher_ =  node_handle.advertise<sensor_msgs::Image>(topic_name, 30);
 }

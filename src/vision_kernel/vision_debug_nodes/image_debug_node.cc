@@ -52,7 +52,7 @@ Data ImageDebugNode::Function(InputData input_data) {
 
 void ImageDebugNode::Init() {
   ros::NodeHandle node_handle;
-  std::string topic_name = tree_name() + "/" + id();
+  std::string topic_name = flow_name() + "/" + id();
 
   publisher_= node_handle.advertise<sensor_msgs::Image>(topic_name, 30);
 }

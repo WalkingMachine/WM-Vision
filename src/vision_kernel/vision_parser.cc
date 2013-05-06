@@ -21,7 +21,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 
-void VisionParser::ParseCatalogCFVT(
+void VisionParser::ParseCatalogCFVF(
     std::map<std::pair<std::string,std::string>, std::string> &path_map) {
   typedef boost::property_tree::ptree ptree;
 
@@ -50,7 +50,7 @@ void VisionParser::ParseCatalogCFVT(
   }
 }
 
-void VisionParser::ParseVisionTree(std::string file_path, VisionTree &tree) {
+void VisionParser::ParseVisionFlow(std::string file_path, VisionFlow &tree) {
   typedef boost::property_tree::ptree ptree;
 
   try {

@@ -35,29 +35,30 @@ void OpenniNode::Init() {
  * @return cv::Mat image
  */
 Data OpenniNode::Function(InputData input_data) {
-  std::shared_ptr<cv::Mat> input_image(new cv::Mat);
-
-  while(!InputManager<sensor_msgs::Image>::GetInstance().has_data(parameters()["TopicRGB"])){
-    ros::Duration(0.1).sleep();
-  }
-
-  sensor_msgs::Image image_message =
-     InputManager<sensor_msgs::Image>::GetInstance().GetInput(parameters()["TopicRGB"]);
-  cv_bridge::CvImagePtr cv_image;
-
-  try {
-    cv_image = cv_bridge::toCvCopy(image_message, "bgr8");;
-  } catch (cv_bridge::Exception& e) {
-    ROS_ERROR("cv_bridge exception: %s", e.what());
-    // TODO should return error
-  }
-
- *input_image = cv_image->image;
-
-  Data output_data;
-  output_data.set_data(input_image);
-
-  return output_data;
+//  std::shared_ptr<cv::Mat> input_image(new cv::Mat);
+//
+//  while(!InputManager<sensor_msgs::Image>::GetInstance().has_data(parameters()["TopicRGB"])){
+//    ros::Duration(0.1).sleep();
+//  }
+//
+//  sensor_msgs::Image image_message =
+//     InputManager<sensor_msgs::Image>::GetInstance().GetInput(parameters()["TopicRGB"]);
+//  cv_bridge::CvImagePtr cv_image;
+//
+//  try {
+//    cv_image = cv_bridge::toCvCopy(image_message, "bgr8");;
+//  } catch (cv_bridge::Exception& e) {
+//    ROS_ERROR("cv_bridge exception: %s", e.what());
+//    // TODO should return error
+//  }
+//
+// *input_image = cv_image->image;
+//
+//  Data output_data;
+//  output_data.set_data(input_image);
+//
+//  return output_data;
+  return Data();
 }
 
 OpenniNode::~OpenniNode() {

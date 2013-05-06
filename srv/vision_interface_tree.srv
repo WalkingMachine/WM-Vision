@@ -1,6 +1,0 @@
-string task_name
-string object_name
-string action
-float32 frequency
----
-string topic_name

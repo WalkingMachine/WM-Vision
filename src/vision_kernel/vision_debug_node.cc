@@ -43,7 +43,7 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
     Function(data);
   }
 
-  call_tree_callback_function(vision_node, output_data);
+  call_flow_callback_function(vision_node, output_data);
 }
 
 /**
