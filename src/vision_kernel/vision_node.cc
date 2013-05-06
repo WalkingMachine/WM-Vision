@@ -9,7 +9,7 @@
  *
  * Programmer: Keaven Martin
  *
- * Description: Tree's children
+ * Description: Flow's children
  *
  */
 
@@ -83,18 +83,18 @@ void VisionNode::set_dependences(const Dependences &dependences) {
   dependences_ = dependences;
 }
 
-std::string VisionNode::tree_name() {
-  return tree_name_;
+std::string VisionNode::flow_name() {
+  return flow_name_;
 }
 
-void VisionNode::set_tree_name(const std::string &tree_name) {
-  tree_name_ = tree_name;
+void VisionNode::set_flow_name(const std::string &flow_name) {
+  flow_name_ = flow_name;
 }
 
-void VisionNode::set_tree_callback_function_(
+void VisionNode::set_flow_callback_function_(
     boost::function<void(std::shared_ptr<VisionNode>,
                          std::shared_ptr<Data>)> callback_function) {
-  tree_callback_function_ = callback_function;
+  flow_callback_function_ = callback_function;
 }
 
 /**
@@ -128,13 +128,13 @@ void VisionNode::StartOneIteration(InputData input_data) {
 void VisionNode::Thread(InputData input_data) {
   std::shared_ptr<Data> output_data(new Data(Function(input_data)));
 
-  std::shared_ptr<VisionNode> this_vision_node(this);
+  std::shared_ptr<VisionNode> this_vision_node(shared_from_this());
   // Call callback function
-  tree_callback_function_(this_vision_node, output_data);
+  flow_callback_function_(this_vision_node, output_data);
 }
 
-void VisionNode::call_tree_callback_function(
+void VisionNode::call_flow_callback_function(
     std::shared_ptr<VisionNode> vision_node,
     std::shared_ptr<Data> data) {
-  tree_callback_function_(vision_node, data);
+  flow_callback_function_(vision_node, data);
 }

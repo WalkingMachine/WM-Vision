@@ -38,12 +38,12 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
   node_handle.getParamCached("debug_mode", debug);
 
   if (debug) {
-    InputData data;
+    InputData data(new std::map<std::string, std::shared_ptr<Data>>);
     data->insert(std::pair<std::string, std::shared_ptr<Data>>("input", output_data));
     Function(data);
   }
 
-  call_tree_callback_function(vision_node, output_data);
+  call_flow_callback_function(vision_node, output_data);
 }
 
 /**

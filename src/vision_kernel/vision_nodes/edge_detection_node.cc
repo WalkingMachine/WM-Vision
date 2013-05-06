@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 03/18/2013
  *
@@ -47,6 +47,7 @@ Data EdgeDetectionNode::Function(InputData input_data) {
 			    boost::lexical_cast<int>(parameters()["Threshold2"]),
 			    3,
 			    parameters()["L2gradient"] == "true");
+
 	  output_data.set_data(output_image);
   }
 

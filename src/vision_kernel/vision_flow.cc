@@ -9,11 +9,11 @@
  *
  * Programmer: Keaven Martin
  *
- * Description: Gestion of vision tree (creation and execution)
+ * Description: Gestion of vision flow (creation and execution)
  *
  */
 
-#include "../../include/vision_kernel/vision_tree.h"
+#include "../../include/vision_kernel/vision_flow.h"
 
 #include <functional>
 #include <boost/bind.hpp>
@@ -33,7 +33,7 @@
  * Constructor
  * @param wanted_frequency
  */
-VisionTree::VisionTree(const std::string &name, const float &wanted_frequency) {
+VisionFlow::VisionFlow(const std::string &name, const float &wanted_frequency) {
   must_stop_ = true;
   thread_ = nullptr;
 
@@ -45,7 +45,7 @@ VisionTree::VisionTree(const std::string &name, const float &wanted_frequency) {
 /**
  * Destructor
  */
-VisionTree::~VisionTree() {
+VisionFlow::~VisionFlow() {
   Stop();
 
   // Delete content in visonNodes vector
@@ -53,14 +53,14 @@ VisionTree::~VisionTree() {
 }
 
 /**
- * Add one node at the tree before start
+ * Add one node at the flow before start
  * @param type VisionNode type(name)
  * @param id
  * @param dependences
  * @param parameters
  * @return Validation
  */
-bool VisionTree::AddNode(const std::string &type,
+bool VisionFlow::AddNode(const std::string &type,
                          const std::string &id,
                          const Dependences &dependences,
                          const Parameters &parameters,
@@ -69,25 +69,25 @@ bool VisionTree::AddNode(const std::string &type,
       VisionNodeFactory::CreateInstance(type);
 
   vision_node->set_id(id);
-  vision_node->set_tree_name(name());
+  vision_node->set_flow_name(name());
   vision_node->set_parameters(parameters);
   vision_node->set_dependences(dependences);
 
   if (debug_node.empty()) {
-    vision_node->set_tree_callback_function_(
-          boost::bind(&VisionTree::CallbackFunction, this, _1, _2));
+    vision_node->set_flow_callback_function_(
+          boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
     vision_nodes_.push_back(vision_node);
   } else {
     std::shared_ptr<VisionDebugNode> vision_debug_node(std::static_pointer_cast<VisionDebugNode>(VisionNodeFactory::CreateInstance(debug_node)));
 
     vision_debug_node->set_id(id);
-    vision_debug_node->set_tree_name(name());
+    vision_debug_node->set_flow_name(name());
     vision_debug_node->set_parameters(parameters);
     vision_debug_node->set_dependences(dependences);
     vision_debug_node->set_vision_node(vision_node);
-    vision_debug_node->set_tree_callback_function_(
-              boost::bind(&VisionTree::CallbackFunction, this, _1, _2));
-    vision_node->set_tree_callback_function_(
+    vision_debug_node->set_flow_callback_function_(
+              boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
+    vision_node->set_flow_callback_function_(
               boost::bind(&VisionDebugNode::CallbackFunction, vision_debug_node.get(), _1, _2));
     vision_debug_node->Init();
     vision_nodes_.push_back(vision_debug_node);
@@ -101,10 +101,10 @@ bool VisionTree::AddNode(const std::string &type,
 
 // TODO(Keaven Martin) Make
 /**
- * Valid vision tree
+ * Valid vision flow
  * @return
  */
-bool VisionTree::IsValid() {
+bool VisionFlow::IsValid() {
   return true;
 }
 
@@ -113,7 +113,7 @@ bool VisionTree::IsValid() {
  * @param visionNode
  * @param outputData
  */
-void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
+void VisionFlow::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                                   std::shared_ptr<Data> node_output_data) {
   // Add visionNode and data in Queue
   NodeThreadSafeQueue::NodeWithData node(vision_node, node_output_data);
@@ -121,18 +121,18 @@ void VisionTree::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
 }
 
 /**
- * Start vision tree
+ * Start vision flow
  */
-void VisionTree::Start() {
+void VisionFlow::Start() {
   // TODO(Keaven Martin) Valid thread is not running
   must_stop_ = false;
-  thread_ = new std::thread(boost::bind(&VisionTree::Thread, this));
+  thread_ = new std::thread(boost::bind(&VisionFlow::Thread, this));
 }
 
 /**
- * Stop vision tree
+ * Stop vision flow
  */
-void VisionTree::Stop() {
+void VisionFlow::Stop() {
   if (!must_stop_) {
     // Signal the thread to stop (thread-safe)
     must_stop_mutex_.lock();
@@ -150,44 +150,44 @@ void VisionTree::Stop() {
 }
 
 /**
- * Set wanted vision tree process frequency
+ * Set wanted vision flow process frequency
  * @param wanted_frequency
  */
-void VisionTree::set_wanted_frequency(const float &wanted_frequency) {
+void VisionFlow::set_wanted_frequency(const float &wanted_frequency) {
   std::lock_guard<std::mutex> lock(wanted_frequency_mutex_);
   wanted_frequency_ = wanted_frequency;
 }
 
 /**
- * Get wanted vision tree process frequency
+ * Get wanted vision flow process frequency
  * @return wanted frequency
  */
-float VisionTree::wanted_frequency() {
+float VisionFlow::wanted_frequency() {
   std::lock_guard<std::mutex> lock(wanted_frequency_mutex_);
   return wanted_frequency_;
 }
 
 /**
- * Get current vision tree process frequency
+ * Get current vision flow process frequency
  * @return current frequency
  */
-float VisionTree::current_frequency() {
+float VisionFlow::current_frequency() {
   std::lock_guard<std::mutex> lock(current_frequency_mutex_);
   return current_frequency_;
 }
 
-void VisionTree::set_name(std::string name) {
+void VisionFlow::set_name(std::string name) {
   name_ = name;
 }
 
-std::string VisionTree::name() {
+std::string VisionFlow::name() {
   return name_;
 }
 
 /**
  * Thread base function
  */
-void VisionTree::Thread() {
+void VisionFlow::Thread() {
   bool must_stop;
 
   wanted_frequency_mutex_.lock();
@@ -223,7 +223,7 @@ void VisionTree::Thread() {
  * Thread process for vision nodes gestion
  */
 // TODO(Keaven Martin) Comment and clean
-void VisionTree::Process() {
+void VisionFlow::Process() {
   // First time take no dependence nodes
   for (auto &vision_node : vision_nodes_) {
     if (vision_node->dependences().empty()) {
@@ -268,18 +268,15 @@ void VisionTree::Process() {
             }
 
             if (vision_node_iteration->dependences().size() == number_node_with_this_dependence + number_node_with_finished_dependence) {
-              VisionNode::InputData input_data;
+              VisionNode::InputData input_data(new std::map<std::string, std::shared_ptr<Data>>);
 
               for(auto &value : vision_node_iteration->dependences()) {
                 for(auto &vision_node_finished_iteration : vision_nodes_finished_with_data) {
                   if (value.second.data() == vision_node_finished_iteration.first->id()) {
-                    input_data->insert(std::pair<std::string, std::shared_ptr<Data>>(
-                                          value.first.data(),
-                                          vision_node_finished_iteration.second));
+                    (*input_data)[value.first.data()] = vision_node_finished_iteration.second;
                   }
                 }
               }
-
               vision_node_iteration->StartOneIteration(input_data);
             }
           }

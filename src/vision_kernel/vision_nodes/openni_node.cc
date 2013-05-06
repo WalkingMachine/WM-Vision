@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 01/15/2013
  *
@@ -16,6 +16,7 @@
 
 #include "../../../include/vision_kernel/vision_nodes/openni_node.h"
 
+#include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <boost/shared_ptr.hpp>
@@ -59,7 +60,7 @@ Data OpenniNode::Function(InputData input_data) {
   return output_data;
 }
 
-OpenniNode::~OpenniNode(){
-  InputManager<sensor_msgs::ImageConstPtr>::GetInstance().RemoveSubscriber(parameters()["TopicRGB"]);
+OpenniNode::~OpenniNode() {
+  InputManager<sensor_msgs::Image>::GetInstance().RemoveSubscriber(parameters()["TopicRGB"]);
 }
 

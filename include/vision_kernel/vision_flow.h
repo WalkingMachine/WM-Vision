@@ -9,12 +9,12 @@
  *
  * Programmer: Keaven Martin
  *
- * Description: Gestion of vision tree (creation and execution)
+ * Description: Gestion of vision flow (creation and execution)
  *
  */
 
-#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_TREE_H_
-#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_TREE_H_
+#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_FLOW_H_
+#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_FLOW_H_
 
 #include <vector>
 #include <string>
@@ -29,13 +29,13 @@
 #include "data.h"
 
 // TODO(Keaven Martin) Add mutex lock when we add some nodes
-class VisionTree {
+class VisionFlow {
  public:
   typedef std::map<std::string, std::string> Dependences;
   typedef std::map<std::string, std::string> Parameters;
 
-  VisionTree(const std::string &name, const float &wanted_frequency);
-  ~VisionTree();
+  VisionFlow(const std::string &name, const float &wanted_frequency);
+  ~VisionFlow();
 
   bool AddNode(const std::string &type,
                const std::string &id,
@@ -71,4 +71,4 @@ class VisionTree {
   void Process();
 };
 
-#endif  // WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_TREE_H_
+#endif  // WM_VISION_INCLUDE_WM_VISIONKERNEL_VISION_FLOW_H_

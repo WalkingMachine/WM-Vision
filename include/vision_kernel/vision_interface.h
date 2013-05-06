@@ -18,9 +18,9 @@
 
 #include <map>
 #include <memory>
-#include <wm_vision/vision_interface_tree.h>  //TODO(Julien) Verif
+#include <wm_vision/vision_interface_flow.h>  //TODO(Julien) Verif
 
-#include "vision_tree.h"
+#include "vision_flow.h"
 
 class VisionInterface {
  public:
@@ -36,14 +36,14 @@ class VisionInterface {
    * @param response contains the return value as defined in visionInterface.srv
    * @return  True if succeeded, False if failed and won't send the Response
    */
-	bool CallbackTree(wm_vision::vision_interface_tree::Request& request,
-	                  wm_vision::vision_interface_tree::Response& response);
+	bool CallbackFlow(wm_vision::vision_interface_flow::Request& request,
+	                  wm_vision::vision_interface_flow::Response& response);
 
  private:
 	// TODO(Keaven) Change std::map
-	std::map<std::pair<std::string, std::string>, std::shared_ptr<VisionTree>>
-	  tree_container_;
-	std::map<std::pair<std::string,std::string>, std::string> path_map;
+	std::map<std::pair<std::string, std::string>, std::shared_ptr<VisionFlow>>
+	  flow_container_;
+	std::map<std::pair<std::string,std::string>, std::string> path_map_;
 
 	/**
 	 *
@@ -51,9 +51,9 @@ class VisionInterface {
 	 * @param id_object The object, person or gesture to be found
 	 * @param tree_name The name of the vision_tree to call
 	 */
-	void CreateTree(const std::string &task_name,
+	void CreateFlow(const std::string &task_name,
 	                const std::string &object_name,
-	                const std::string &tree_name,
+	                const std::string &flow_name,
 	                const float &frequency);
 };
 

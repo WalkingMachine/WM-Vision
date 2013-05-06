@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 12/07/2012
  *
@@ -51,7 +51,7 @@ Data GrayscaleNode::Function(InputData input_data) {
   return output_data;
 }
 
-int GrayscaleNode::GrayscaleTypeStringToInt(std::string grayscale_type) {
+int GrayscaleNode::GrayscaleTypeStringToInt(const std::string &grayscale_type) {
   int grayscale_type_int = CV_BGR2GRAY;
 
   if(grayscale_type == "CV_BGR2GRAY")

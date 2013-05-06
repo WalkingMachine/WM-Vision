@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 01/15/2013
  *
@@ -24,23 +24,25 @@ Data ImageDebugNode::Function(InputData input_data) {
   std::shared_ptr<Data> data = input_data->at("input");
 
   std_msgs::Header header;
-      int encode_number = data->data<cv::Mat>()->type();
-      std::string encoding;
+  int encode_number = data->data<cv::Mat>()->type();
+  std::string encoding;
 
-      switch(encode_number){
-        case CV_8U:
-          encoding = sensor_msgs::image_encodings::MONO8;
-          break;
-        case CV_8UC3:
-          encoding = sensor_msgs::image_encodings::BGR8;
-          break;
-        default:
-          ROS_ERROR("Invalid image encoding in %s debug node", id().c_str());
-          break;
-      }
+  switch(encode_number) {
+    case CV_8U: {
+      encoding = sensor_msgs::image_encodings::MONO8;
+      break;
+    }
+    case CV_8UC3: {
+      encoding = sensor_msgs::image_encodings::BGR8;
+      break;
+    }
+    default: {
+      ROS_ERROR("Invalid image encoding in %s debug node", id().c_str());
+    }
+  }
 
-      cv_bridge::CvImagePtr output_message(
-          new cv_bridge::CvImage(header, encoding, *data->data<cv::Mat>()));
+  cv_bridge::CvImagePtr output_message(
+    new cv_bridge::CvImage(header, encoding, *data->data<cv::Mat>()));
 
   publisher_.publish(output_message);
 
@@ -48,9 +50,9 @@ Data ImageDebugNode::Function(InputData input_data) {
   return empty_data;
 }
 
-void ImageDebugNode::Init(){
+void ImageDebugNode::Init() {
   ros::NodeHandle node_handle;
-  std::string topic_name = tree_name() + "/" + id();
+  std::string topic_name = flow_name() + "/" + id();
 
   publisher_= node_handle.advertise<sensor_msgs::Image>(topic_name, 30);
 }

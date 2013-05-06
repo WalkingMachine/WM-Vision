@@ -9,7 +9,7 @@
  *
  * Programmer: Julien Côté, Keaven Martin
  *
- * Description: VisionCfvtParser is used to parse a file which holds the path
+ * Description: VisionCfvfParser is used to parse a file which holds the path
  *              to the trees to execute.
  *
  */
@@ -21,7 +21,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 
-void VisionParser::ParseCatalogCFVT(
+void VisionParser::ParseCatalogCFVF(
     std::map<std::pair<std::string,std::string>, std::string> &path_map) {
   typedef boost::property_tree::ptree ptree;
 
@@ -50,7 +50,7 @@ void VisionParser::ParseCatalogCFVT(
   }
 }
 
-void VisionParser::ParseVisionTree(std::string file_path, VisionTree &tree) {
+void VisionParser::ParseVisionFlow(std::string file_path, VisionFlow &flow) {
   typedef boost::property_tree::ptree ptree;
 
   try {
@@ -83,12 +83,12 @@ void VisionParser::ParseVisionTree(std::string file_path, VisionTree &tree) {
         }
       }
 
-      if (!tree.AddNode(node_iteration.first.data(), id, dependences, parameters, debug_node_name)) {
+      if (!flow.AddNode(node_iteration.first.data(), id, dependences, parameters, debug_node_name)) {
         throw NodeValidationException();
       }
     }
 
-    if (!tree.IsValid())
+    if (!flow.IsValid())
       throw NodeValidationException();
 
     // TODO(Keaven Martin) Valid dependence

@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 02/26/2013
  *
@@ -13,17 +13,18 @@
  *
  */
 
-#ifndef OUTPUT_PERSON_NODE_H_
-#define OUTPUT_PERSON_NODE_H_
+#ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_PERSON_NODE_H_
+#define WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_PERSON_NODE_H_
 
 #include <ros/publisher.h>
+
 #include "../data.h"
 #include "../vision_node.h"
 #include "../vision_node_factory.h"
 
 class OutputPersonNode : public VisionNode {
  public:
-  OutputPersonNode();
+  OutputPersonNode() {};
   virtual ~OutputPersonNode();
 
   Data Function(InputData input_data);
@@ -34,6 +35,6 @@ class OutputPersonNode : public VisionNode {
   REGISTER_DEC_TYPE(OutputPersonNode);
 };
 
-  REGISTER_DEF_TYPE(OutputPersonNode);
+REGISTER_DEF_TYPE(OutputPersonNode);
 
-#endif /* OUTPUT_PERSON_NODE_H_ */
+#endif  // WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_OUTPUT_PERSON_NODE_H_

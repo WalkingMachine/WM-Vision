@@ -25,10 +25,6 @@ class Data {
     data_type_ = &typeid(void);
   }
 
-  ~Data() {
-    delete data_type_;
-  }
-
   template<class type>
   std::shared_ptr<type> DataWithValidation() {
     if (*data_type_ == typeid(type)) {

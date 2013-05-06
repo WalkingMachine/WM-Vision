@@ -3,7 +3,7 @@
  *
  * Project: Walking Machine Sara robot 2012-2013
  * Package: wm_vision
- * Node: wm_visionKernel
+ * Node: vision_kernel
  *
  * Creation date: 03/18/2013
  *
@@ -43,11 +43,10 @@ Data LineDetectionNode::Function(InputData input_data) {
     		        boost::lexical_cast<double>(parameters()["MaxLineGap"]));
 
 //    output_image->setTo(0);  // Black image
-//    for(size_t i = 0; i < lines.size(); i++)
-//	{
+//    for(size_t i = 0; i < lines.size(); i++) {
 //		cv::line(*output_image, cv::Point(lines[i][0], lines[i][1]),
 //				 cv::Point(lines[i][2], lines[i][3]), cv::Scalar(255), 1, 8);
-//	}
+//	  }
 
     output_data.set_data(output_vector);
   }
