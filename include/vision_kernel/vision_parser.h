@@ -9,7 +9,7 @@
  *
  * Programmer: Julien Côté, Keaven Martin
  *
- * Description: VisionCfvtParser is used to parse a file which holds the path
+ * Description: VisionCfvfParser is used to parse a file which holds the path
  *              to the flows to execute.
  *
  */

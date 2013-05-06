@@ -24,7 +24,7 @@ catkin_package(
    INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME})
  
-include_directories(cfvt include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(cfvf include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 link_directories(${catkin_LINK_DIRS})
 
 add_library(lib${PROJECT_NAME} SHARED

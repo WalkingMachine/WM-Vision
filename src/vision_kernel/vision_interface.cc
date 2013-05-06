@@ -76,7 +76,7 @@ void VisionInterface::CreateFlow(const std::string &task_name,
   ros::NodeHandle node_handle;
   std::string cfvf_path;
 
-  node_handle.getParamCached("cfvf_path",cfvf_path);  // Get rosparam cfvt_path
+  node_handle.getParamCached("cfvf_path",cfvf_path);  // Get rosparam cfvf_path
 
   try {
     VisionParser::ParseVisionFlow(std::string(cfvf_path + flow_name + ".cfvf"),
