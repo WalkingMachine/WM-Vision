@@ -21,15 +21,18 @@
 #include <boost/lexical_cast.hpp>
 #include <ros/ros.h>
 
+enum {X1, Y1, X2, Y2};
+
 Data ParallelLinesNode::Function(InputData input_data) {
   std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
 
   double angle = boost::lexical_cast<double>(parameters()["Angle"]) / 180 * CV_PI;
-//  if(angle > CV_PI) angle -= CV_PI;
+  //  if(angle > CV_PI) angle -= CV_PI;
 
   double tolerance = boost::lexical_cast<double>(parameters()["AngleTolerance"]) / 180 * CV_PI;
 
+  // Positif tolerance
   bool positif_tolerance_pass_pi = false;
   double positif_tolerance = (angle + tolerance);
   if(positif_tolerance >= CV_PI) {
@@ -37,6 +40,7 @@ Data ParallelLinesNode::Function(InputData input_data) {
 	  positif_tolerance -= CV_PI;
   }
 
+  //Negatif tolerance
   bool negatif_tolerance_pass_pi = false;
   double negatif_tolerance = (angle - tolerance);
   if(negatif_tolerance < 0) {
@@ -47,34 +51,36 @@ Data ParallelLinesNode::Function(InputData input_data) {
   if (parameters()["IsOnCUDA"] == "true") {
 
   } else {
+    cv::vector<cv::Vec4i> *lines = &*data->data<cv::vector<cv::Vec4i>>();
 //	  std::shared_ptr<cv::vector<cv::Vec4i>> output_vector(new cv::vector<cv::Vec4i>);
-	  cv::vector<cv::Vec4i> *lines = &*data->data<cv::vector<cv::Vec4i>>();
-	    std::shared_ptr<cv::Mat> output_image(
-	        new cv::Mat(480,
-	                    640,
-	                    CV_8U));
+
+    ////// TEST OUTPUT IMAGE///////////////////////////////////////////////////////////
+	  std::shared_ptr<cv::Mat> output_image(new cv::Mat(480, 640, CV_8U));
 	  cv::vector<cv::Vec4i> output_vector;
+	  ///////////////////////////////////////////////////////////////////////////////////
 
 	  float line_angle;
 
-	  for(auto &line: *lines) {  //each lines
-		  line_angle = cv::fastAtan2(line[1] - line[3], line[0] - line[2]) / 180 * CV_PI;  // Get line angle
-
+	  for(auto &line: *lines) {  // Each lines
+		  line_angle = cv::fastAtan2(line[X1] - line[X2], line[Y1] - line[Y2]) / 180 * CV_PI;  // Get line angle
 		  if(line_angle >= CV_PI) line_angle -= CV_PI;
 
 		  if(negatif_tolerance <= line_angle && line_angle <= positif_tolerance) {  // Verify angle with tolerance
 			  output_vector.push_back(line);
 		  }
 	  }
+
 //	  output_data.set_data(output_vector);
 
-	output_image->setTo(0);  // Black image
-	for(size_t i = 0; i < output_vector.size(); i++)
-	{
-	  cv::line(*output_image, cv::Point(output_vector[i][0], output_vector[i][1]),
-				 cv::Point(output_vector[i][2], output_vector[i][3]), cv::Scalar(255), 1, 8);
+	  ////// TEST OUTPUT IMAGE///////////////////////////////////////////////////////////
+	  output_image->setTo(0);  // Black image
+    for(size_t i = 0; i < output_vector.size(); i++)
+    {
+      cv::line(*output_image, cv::Point(output_vector[i][0], output_vector[i][1]),
+           cv::Point(output_vector[i][2], output_vector[i][3]), cv::Scalar(255), 1, 8);
     }
     output_data.set_data(output_image);
+    ///////////////////////////////////////////////////////////////////////////////////
   }
 
   return output_data;
