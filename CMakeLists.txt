@@ -47,6 +47,7 @@ add_library(lib${PROJECT_NAME}Nodes SHARED
   src/vision_kernel/vision_nodes/threshold_node.cc
   src/vision_kernel/vision_nodes/edge_detection_node.cc
   src/vision_kernel/vision_nodes/line_detection_node.cc
+  src/vision_kernel/vision_nodes/parallel_lines_node.cc
   src/vision_kernel/vision_nodes/output_object_detail_node.cc
   src/vision_kernel/vision_nodes/output_object_boundingbox_node.cc
   src/vision_kernel/vision_nodes/output_person_node.cc
