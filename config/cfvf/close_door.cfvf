@@ -1,21 +1,22 @@
-;EdgeDetectionNode
-;{
-;    id edgeDetection
-;    debug ImageDebugNode
-;    dependence
-;    {
-;        input inputImage
-;    }
-;    parameter
-;    {
-;        BlurKHeight 3
-;        BlurKWidth 3
-;        IsOnCUDA false
-;        L2gradient true
-;        Threshold1 50
- ;       Threshold2 200
- ;   }
-;}
+EdgeDetectionNode
+{
+    id edgeDetection
+    debug ImageDebugNode
+    dependence
+    {
+        input inputImage
+    }
+    parameter
+    {
+        BlurKHeight 3
+        BlurKWidth 3
+        IsOnCUDA false
+        L2gradient true
+        Threshold1 50
+        Threshold2 200
+    }
+}
+
 OpenniNode
 {
     id inputImage
@@ -26,21 +27,37 @@ OpenniNode
         TopicRGB /camera/rgb/image_mono
     }
 }
-;LineDetectionNode
-;{
-;    id lineDetection
-;    debug ImageDebugNode
-;    dependence
-;    {
-;        input edgeDetection
-;    }
-;    parameter
-;    {
-;        IsOnCUDA false
-;        MaxLineGap 20
-;        MinLineLength 10
-;        Rho 1
-;        Theta 180
-;        Threshold 80
-;    }
-;}
+
+LineDetectionNode
+{
+    id lineDetection
+    dependence
+    {
+        input edgeDetection
+    }
+    parameter
+    {
+        IsOnCUDA false
+        MaxLineGap 20
+        MinLineLength 10
+        Rho 1
+        Theta 180
+        Threshold 80
+    }
+}
+
+ParallelLinesNode
+{
+    id verticalLine
+    debug ImageDebugNode
+    dependence
+    {
+        input lineDetection
+    }
+    parameter
+    {
+        IsOnCUDA false
+		Angle 0
+		AngleTolerance 10
+    }
+}

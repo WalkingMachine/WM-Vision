@@ -24,11 +24,11 @@
 enum {X1, Y1, X2, Y2};
 
 Data ParallelLinesNode::Function(InputData input_data) {
-  std::shared_ptr<Data> data = input_data->at("input");
+  std::shared_ptr<cv::vector<cv::Vec4i>> lines = input_data->at("input")->DataWithValidation<cv::vector<cv::Vec4i>>();
   Data output_data;
 
   double angle = boost::lexical_cast<double>(parameters()["Angle"]) / 180 * CV_PI;
-  //  if(angle > CV_PI) angle -= CV_PI;
+  if(angle > CV_PI) angle -= CV_PI;
 
   double tolerance = boost::lexical_cast<double>(parameters()["AngleTolerance"]) / 180 * CV_PI;
 
@@ -51,36 +51,34 @@ Data ParallelLinesNode::Function(InputData input_data) {
   if (parameters()["IsOnCUDA"] == "true") {
 
   } else {
-    cv::vector<cv::Vec4i> *lines = &*data->data<cv::vector<cv::Vec4i>>();
-//	  std::shared_ptr<cv::vector<cv::Vec4i>> output_vector(new cv::vector<cv::Vec4i>);
-
-    ////// TEST OUTPUT IMAGE///////////////////////////////////////////////////////////
-	  std::shared_ptr<cv::Mat> output_image(new cv::Mat(480, 640, CV_8U));
-	  cv::vector<cv::Vec4i> output_vector;
-	  ///////////////////////////////////////////////////////////////////////////////////
+	  std::shared_ptr<cv::vector<cv::Vec4i>> output_vector(new cv::vector<cv::Vec4i>);
 
 	  float line_angle;
+	  bool positif_tolerance_ok, negatif_tolerance_ok;
 
-	  for(auto &line: *lines) {  // Each lines
+	  for (auto &line: *lines) {  // Each lines
 		  line_angle = cv::fastAtan2(line[X1] - line[X2], line[Y1] - line[Y2]) / 180 * CV_PI;  // Get line angle
 		  if(line_angle >= CV_PI) line_angle -= CV_PI;
 
-		  if(negatif_tolerance <= line_angle && line_angle <= positif_tolerance) {  // Verify angle with tolerance
-			  output_vector.push_back(line);
-		  }
+      // Positif tolerance validation
+      if (positif_tolerance_pass_pi) {
+        positif_tolerance_ok = (line_angle <= positif_tolerance) || (line_angle >= angle);
+      } else {
+        positif_tolerance_ok = (line_angle <= positif_tolerance) && (line_angle >= angle);
+      }
+
+      // Negatif tolerance validation
+      if (negatif_tolerance_pass_pi) {
+        negatif_tolerance_ok = (line_angle >= negatif_tolerance) || (line_angle <= angle);
+      } else {
+        negatif_tolerance_ok = (line_angle >= negatif_tolerance) && (line_angle <= angle);
+      }
+
+		  if (negatif_tolerance_ok || positif_tolerance_ok)
+		    output_vector->push_back(line);
 	  }
 
-//	  output_data.set_data(output_vector);
-
-	  ////// TEST OUTPUT IMAGE///////////////////////////////////////////////////////////
-	  output_image->setTo(0);  // Black image
-    for(size_t i = 0; i < output_vector.size(); i++)
-    {
-      cv::line(*output_image, cv::Point(output_vector[i][0], output_vector[i][1]),
-           cv::Point(output_vector[i][2], output_vector[i][3]), cv::Scalar(255), 1, 8);
-    }
-    output_data.set_data(output_image);
-    ///////////////////////////////////////////////////////////////////////////////////
+	  output_data.set_data(output_vector);
   }
 
   return output_data;
