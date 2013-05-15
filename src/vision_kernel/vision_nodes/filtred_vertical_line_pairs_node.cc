@@ -84,13 +84,13 @@ Data FiltredVerticalLinePairsNode::Function(InputData input_data) {
 	                              *lowest_X_second_line_pointer,
 	                              *bigest_X_second_line_pointer)) {
 
-	          cv::Vec4i first_line(*lowest_X_first_line_pointer,
+	          cv::Vec4i first_line(*(lowest_Y_first_line_pointer - 1),
 	                               *lowest_Y_first_line_pointer,
-	                               *bigest_X_first_line_pointer,
+	                               *(bigest_Y_first_line_pointer - 1),
 	                               *bigest_Y_first_line_pointer);
-	          cv::Vec4i second_line(*lowest_X_second_line_pointer,
+	          cv::Vec4i second_line(*(lowest_Y_second_line_pointer - 1),
                                   *lowest_Y_second_line_pointer,
-                                  *bigest_X_second_line_pointer,
+                                  *(bigest_Y_second_line_pointer - 1),
                                   *bigest_Y_second_line_pointer);
 
 	          if (*lowest_X_first_line_pointer < *lowest_X_second_line_pointer) {
