@@ -49,7 +49,6 @@ LineDetectionNode
 ParallelLinesNode
 {
     id verticalLine
-    debug ImageDebugNode
     dependence
     {
         input lineDetection
@@ -59,5 +58,14 @@ ParallelLinesNode
         IsOnCUDA false
 		Angle 0
 		AngleTolerance 10
+    }
+}
+
+FiltredVerticalLinePairsNode
+{
+    id filtredVerticalLinePairs
+    dependence
+    {
+        input verticalLine
     }
 }
