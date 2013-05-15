@@ -51,7 +51,7 @@ ParallelLinesNode
     id verticalLine
     dependence
     {
-        input lineDetection
+        lines lineDetection
     }
     parameter
     {
