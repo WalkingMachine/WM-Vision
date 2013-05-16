@@ -39,7 +39,7 @@ Data FiltredVerticalLinePairsNode::Function(InputData input_data) {
         *lowest_Y_second_line_pointer, *bigest_Y_second_line_pointer;
 
 	  // Improved iteration between pairs of line
-	  for (unsigned int i = 0; i < lines->size(); i++) {
+	  for (unsigned int i = 0; i < lines->size() - 1; i++) {
 		  for (unsigned int j = i + 1; j <= lines->size(); j++) {
 			  // Which points of the first line has lowest and bigest Y value
 			  if ((*lines)[i][Y1] < (*lines)[i][Y2]) {
