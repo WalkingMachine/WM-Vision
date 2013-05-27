@@ -6,8 +6,9 @@ if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
 endif()
  
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp rospy message_generation cv_bridge)
+find_package(catkin REQUIRED COMPONENTS std_msgs roscpp rospy message_generation cv_bridge pcl pcl_ros)
 find_package(OpenCV 2.4 REQUIRED)
+find_package(PCL 1.6 REQUIRED COMPONENTS)
 
 add_service_files(
   FILES
@@ -23,9 +24,9 @@ catkin_package(
    CATKIN_DEPENDS std_msgs roscpp rospy message_runtime
    INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME})
- 
+
 include_directories(cfvf include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
-link_directories(${catkin_LINK_DIRS})
+link_directories(${catkin_LINK_DIRS} ${PCL_LIBRARY_DIRS})
 
 add_library(lib${PROJECT_NAME} SHARED
   src/vision_kernel/vision_interface.cc
@@ -42,18 +43,21 @@ add_library(lib${PROJECT_NAME} SHARED
   )
   
 add_library(lib${PROJECT_NAME}Nodes SHARED
+  src/vision_kernel/vision_nodes/input_image_node.cc
+
   src/vision_kernel/vision_nodes/grayscale_node.cc
-  src/vision_kernel/vision_nodes/openni_node.cc
   src/vision_kernel/vision_nodes/threshold_node.cc
   src/vision_kernel/vision_nodes/edge_detection_node.cc
   src/vision_kernel/vision_nodes/line_detection_node.cc
   src/vision_kernel/vision_nodes/parallel_lines_node.cc
   src/vision_kernel/vision_nodes/filtred_vertical_line_pairs_node.cc
+
+  src/vision_kernel/vision_debug_nodes/image_debug_node.cc
+  
   src/vision_kernel/vision_nodes/output_object_detail_node.cc
   src/vision_kernel/vision_nodes/output_object_boundingbox_node.cc
   src/vision_kernel/vision_nodes/output_person_node.cc
   src/vision_kernel/vision_nodes/output_gesture_node.cc
-  src/vision_kernel/vision_debug_nodes/image_debug_node.cc
   )
  
 add_executable(${PROJECT_NAME}

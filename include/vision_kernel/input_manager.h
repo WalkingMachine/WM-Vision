@@ -32,7 +32,7 @@ class InputManager {
     return instance_;
   };
 
-  T GetInput(const std::string &topic_name) {
+  std::shared_ptr<T> GetInput(const std::string &topic_name) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto input_iterator = input_list_.find(topic_name);
     return input_iterator->second->Poll();

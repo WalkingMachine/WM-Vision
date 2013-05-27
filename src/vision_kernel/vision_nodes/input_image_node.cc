@@ -14,18 +14,14 @@
  *
  */
 
-#include "../../../include/vision_kernel/vision_nodes/openni_node.h"
+#include "../../../include/vision_kernel/vision_nodes/input_image_node.h"
 
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <boost/shared_ptr.hpp>
 
-void OpenniNode::Init() {
-  //input_manager_image_ = InputManager<sensor_msgs::Image>::GetInstance();
-
-  // TODO(Julien cote) Make sure ImageConstPtr is safe or change toImage
-  InputManager<sensor_msgs::Image>::GetInstance().AddSubscriber(parameters()["TopicRGB"]);
+void InputImageNode::Init() {
+  InputManager<sensor_msgs::Image>::GetInstance().AddSubscriber(parameters()["SourceTopic"]);
 }
 
 /**
@@ -34,19 +30,19 @@ void OpenniNode::Init() {
  * @param input_data
  * @return cv::Mat image
  */
-Data OpenniNode::Function(InputData input_data) {
+Data InputImageNode::Function(InputData input_data) {
   std::shared_ptr<cv::Mat> input_image(new cv::Mat);
 
-  while(!InputManager<sensor_msgs::Image>::GetInstance().has_data(parameters()["TopicRGB"])){
-    ros::Duration(0.1).sleep();
+  while(!InputManager<sensor_msgs::Image>::GetInstance().has_data(parameters()["SourceTopic"])){
+    ros::Duration(0.3).sleep();
   }
 
-  sensor_msgs::Image image_message =
-     InputManager<sensor_msgs::Image>::GetInstance().GetInput(parameters()["TopicRGB"]);
+  std::shared_ptr<sensor_msgs::Image> image_message =
+     InputManager<sensor_msgs::Image>::GetInstance().GetInput(parameters()["SourceTopic"]);
   cv_bridge::CvImagePtr cv_image;
 
   try {
-    cv_image = cv_bridge::toCvCopy(image_message, "bgr8");;
+    cv_image = cv_bridge::toCvCopy(*image_message, "bgr8");;
   } catch (cv_bridge::Exception& e) {
     ROS_ERROR("cv_bridge exception: %s", e.what());
     // TODO should return error
@@ -60,7 +56,6 @@ Data OpenniNode::Function(InputData input_data) {
   return output_data;
 }
 
-OpenniNode::~OpenniNode() {
-  InputManager<sensor_msgs::Image>::GetInstance().RemoveSubscriber(parameters()["TopicRGB"]);
+InputImageNode::~InputImageNode() {
+  InputManager<sensor_msgs::Image>::GetInstance().RemoveSubscriber(parameters()["SourceTopic"]);
 }
-
