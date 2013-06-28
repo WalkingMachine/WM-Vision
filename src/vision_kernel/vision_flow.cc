@@ -28,7 +28,7 @@
 #include "../../include/vision_kernel/vision_nodes/line_detection_node.h"
 #include "../../include/vision_kernel/vision_nodes/parallel_lines_node.h"
 #include "../../include/vision_kernel/vision_nodes/filtred_vertical_line_pairs_node.h"
-
+#include "../../include/vision_kernel/vision_nodes/door_gap_node.h"
 
 /**
  * Constructor

@@ -69,3 +69,21 @@ FiltredVerticalLinePairsNode
         input verticalLine
     }
 }
+
+DoorGapNode
+{
+	id doorGap
+	debug ImageDebugNode
+	dependence
+	{
+		horizontalsLinesVector hlineDetection 
+		verticalsLinesDeque vlineDetection 
+	}
+	parameter
+    {
+        IsOnCUDA false
+        MaxDoorGap 10
+        HorizontalBoxThreshold 20
+        VericalBoxThreshold 20   
+     }
+}
