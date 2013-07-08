@@ -23,7 +23,7 @@
 
 #include "../../include/vision_kernel/vision_nodes/grayscale_node.h"
 #include "../../include/vision_kernel/vision_nodes/threshold_node.h"
-#include "../../include/vision_kernel/vision_nodes/openni_node.h"
+#include "../../include/vision_kernel/vision_nodes/input_image_node.h"
 #include "../../include/vision_kernel/vision_nodes/edge_detection_node.h"
 #include "../../include/vision_kernel/vision_nodes/line_detection_node.h"
 #include "../../include/vision_kernel/vision_nodes/parallel_lines_node.h"
