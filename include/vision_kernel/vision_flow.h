@@ -66,7 +66,6 @@ class VisionFlow {
   std::mutex must_stop_mutex_;
   std::mutex wanted_frequency_mutex_;
   std::mutex current_frequency_mutex_;
-  int shared_ptr;
 
   void Process();
 };

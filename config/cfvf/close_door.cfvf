@@ -1,3 +1,25 @@
+InputImageNode
+{
+    id inputImage
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+        SourceTopic /camera/rgb/image_mono
+    }
+}
+
+InputImageNode
+{
+    id inputImageRGB
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+       SourceTopic /camera/rgb/image_raw
+    }
+}
+
 EdgeDetectionNode
 {
     id edgeDetection
@@ -11,20 +33,9 @@ EdgeDetectionNode
         BlurKHeight 3
         BlurKWidth 3
         IsOnCUDA false
-        L2gradient true
-        Threshold1 50
-        Threshold2 200
-    }
-}
-
-OpenniNode
-{
-    id inputImage
-    debug ImageDebugNode
-    parameter
-    {
-        IsOnCUDA false
-        TopicRGB /camera/rgb/image_mono
+        L2gradient false
+        Threshold1 20
+        Threshold2 80
     }
 }
 
@@ -70,20 +81,38 @@ FiltredVerticalLinePairsNode
     }
 }
 
-DoorGapNode
+;DoorGapNode
+;{
+;	id doorGap
+;	debug ImageDebugNode
+;	dependence
+;	{
+;		horizontalsLinesVector hlineDetection 
+;		verticalsLinesDeque vlineDetection 
+;	}
+;	parameter
+;    {
+;        IsOnCUDA false
+;        MaxDoorGap 10
+;        HorizontalBoxThreshold 20
+;        VericalBoxThreshold 20   
+;     }
+;}
+
+DifferentColorBetwenDoorAndWallNode
 {
-	id doorGap
-	debug ImageDebugNode
-	dependence
-	{
-		horizontalsLinesVector hlineDetection 
-		verticalsLinesDeque vlineDetection 
-	}
-	parameter
+    id differentColorBetwenDoorAndWall
+    debug ImageDebugNode
+    dependence
+    {
+        imageRGB inputImageRGB
+        verticalLinePairs filtredVerticalLinePairs
+    }
+    parameter
     {
         IsOnCUDA false
-        MaxDoorGap 10
-        HorizontalBoxThreshold 20
-        VericalBoxThreshold 20   
-     }
+    	ValidationType ALL
+		NbrPixelLeftOrRightOfDoor 20
+		DeltaEMax 0.1
+    }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>wm_vision</name>
-  <version>0.0.1</version>
+  <version>1.1.0</version>
   <description>wm_vision</description>
-  <maintainer email="keavenaction@gmail.com">Keaven Martin</maintainer>
+  <maintainer email="keaven.martin@gmail.com">Keaven Martin</maintainer>
   <author>Keaven Martin</author>
   <license>BSD</license>
   <url>http://ros.org/wiki/wm_vision</url>
