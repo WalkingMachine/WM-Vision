@@ -25,18 +25,20 @@ Data ParallelLinesNode::Function(InputData input_data) {
   std::shared_ptr<cv::vector<cv::Vec4i>> lines =
       input_data->at("lines")->DataWithValidation<cv::vector<cv::Vec4i>>();
 
-  std::shared_ptr<int> offset_angle;
 
-  try {
-    offset_angle = input_data->at("offsetAngle")->DataWithValidation<int>();
-  } catch (std::exception e) {
-    offset_angle = 0;
+  // Get offset if you received it in input data
+  double offset_angle = 0;
+  std::map<std::string, std::shared_ptr<Data>>::iterator offset_angle_data;
+
+  offset_angle_data = input_data->find("offsetAngle");
+  if ((offset_angle_data = input_data->find("offsetAngle")) != input_data->end()) {
+    offset_angle = *offset_angle_data->second->DataWithValidation<double>();
   }
 
   Data output_data;
 
   double angle =
-      (boost::lexical_cast<double>(parameters()["Angle"]) + *offset_angle) / 180 * CV_PI;
+      (boost::lexical_cast<double>(parameters()["Angle"]) + offset_angle) / 180 * CV_PI;
   if(angle > CV_PI) angle -= CV_PI;
 
   double tolerance =
