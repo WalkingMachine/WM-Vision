@@ -19,8 +19,6 @@
 #include <opencv2/gpu/gpu.hpp>
 #include <boost/lexical_cast.hpp>
 #include <ros/ros.h>
-#include <iostream>
-#include <exception>
 
 enum {X1, Y1, X2, Y2};
 
@@ -92,9 +90,7 @@ Data DifferentColorBetwenDoorAndWallNode::Function(InputData input_data) {
 
       //Center of door
       if (*lowest_x_second_line - *bigest_x_first_line > 0) {  //Remove near angular parallel lines
-        cv::Mat3b center_image_rgb_masked;
-
-        center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height));
+        cv::Mat3b center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height));
 
         average_color_center = cv::mean(center_image_rgb_masked);  // Find average color in center
         cv::cvtColor(average_color_center, average_lab_color_center, CV_RGB2Lab);  //Convert RGB to CIELAB
@@ -102,12 +98,9 @@ Data DifferentColorBetwenDoorAndWallNode::Function(InputData input_data) {
         // LEFT_VS_CENTER or ALL
         if(validationType != RIGHT_VS_CENTER) {
           // Left of door
-          int x;
-          if(*lowest_x_first_line - pixel_threshold < 0) {
-            x = 0;
-          } else {
-            x = *lowest_x_first_line - pixel_threshold < 0;
-          }
+          int x = *lowest_x_first_line - pixel_threshold;
+          if(x < 0) x = 0;
+
           cv::Mat3b left_image_rgb_masked = (*image_rgb)(cv::Rect(x, *top_y, pixel_threshold, door_height));
           average_color_left = cv::mean(left_image_rgb_masked);  // Find average color at left
           cv::cvtColor(average_color_left, average_lab_color_left, CV_RGB2Lab);  //Convert RGB to CIELAB
