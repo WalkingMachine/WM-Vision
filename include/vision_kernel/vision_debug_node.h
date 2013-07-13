@@ -35,7 +35,7 @@ class VisionDebugNode : public VisionNode {
   virtual Data Function(InputData input_data) = 0;
   virtual void Init() {};
 
-  void Thread(InputData input_data);
+  void Thread();
 
  private:
   std::shared_ptr<VisionNode> vision_node_;

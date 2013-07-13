@@ -111,26 +111,42 @@ bool VisionNode::IsValid() {
  * @param input_data
  */
 void VisionNode::StartOneIteration(InputData input_data) {
-  if (thread_ != nullptr)
-      thread_->join();
+  thread_mutex_.lock();
+  input_data_ = input_data;
+  thread_mutex_.unlock();
 
-  delete thread_;
+  must_stop_ = false;
 
-  thread_ = new boost::thread(boost::bind(&VisionNode::Thread,
-                                          this,
-                                          input_data));
+  if (thread_ == nullptr) {  // First time
+    thread_ = new boost::thread(boost::bind(&VisionNode::Thread, this));
+  } else {
+    thread_start_condition_.notify_one();
+  }
+}
+
+void VisionNode::Stop() {
+      must_stop_ = true;
+      thread_start_condition_.notify_one();
+
+      boost::mutex::scoped_lock lock(thread_mutex_);
+      thread_stoped_condition_.timed_wait(lock, boost::posix_time::milliseconds(1));
 }
 
 /**
  * Node's thread
  * @param input_data
  */
-void VisionNode::Thread(InputData input_data) {
-  std::shared_ptr<Data> output_data(new Data(Function(input_data)));
+void VisionNode::Thread() {
+  do {
+    boost::mutex::scoped_lock lock(thread_mutex_);
+    std::shared_ptr<Data> output_data(new Data(Function(input_data_)));
 
-  std::shared_ptr<VisionNode> this_vision_node(shared_from_this());
-  // Call callback function
-  flow_callback_function_(this_vision_node, output_data);
+    std::shared_ptr<VisionNode> this_vision_node(shared_from_this());
+    flow_callback_function_(this_vision_node, output_data);  // Call callback function
+
+    thread_start_condition_.wait(lock);
+  } while(!must_stop_);
+  thread_stoped_condition_.notify_one();
 }
 
 void VisionNode::call_flow_callback_function(

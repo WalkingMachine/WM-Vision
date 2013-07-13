@@ -50,6 +50,12 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
  * Debug Node thread
  * @param input_data
  */
-void VisionDebugNode::Thread(InputData input_data) {
-  vision_node_->StartOneIteration(input_data);
+void VisionDebugNode::Thread() {
+  do {
+    boost::mutex::scoped_lock lock(thread_mutex_);
+    vision_node_->StartOneIteration(input_data_);
+
+    thread_start_condition_.wait(lock);
+  } while(!must_stop_);
+  thread_stoped_condition_.notify_one();
 }

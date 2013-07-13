@@ -53,13 +53,20 @@ class VisionNode : public std::enable_shared_from_this<VisionNode> {
 
   bool IsValid();
   void StartOneIteration(InputData input_data);
-  virtual void Thread(InputData input_data);
+  void Stop();
+  virtual void Thread();
   virtual void Init() {};
 
  protected:
   void call_flow_callback_function(std::shared_ptr<VisionNode> vision_node,
                                    std::shared_ptr<Data> data);
   virtual Data Function(InputData input_data) = 0;
+
+  bool must_stop_;
+  boost::condition_variable thread_start_condition_;
+  boost::condition_variable thread_stoped_condition_;
+  boost::mutex thread_mutex_;
+  InputData input_data_;
 
  private:
   boost::thread *thread_;

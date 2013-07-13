@@ -50,8 +50,9 @@ VisionFlow::VisionFlow(const std::string &name, const float &wanted_frequency) {
 VisionFlow::~VisionFlow() {
   Stop();
 
-  // Delete content in visonNodes vector
-  vision_nodes_.clear();
+  for(auto &vision_node : vision_nodes_) {
+    vision_node->Stop();
+  }
 }
 
 /**
