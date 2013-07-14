@@ -25,11 +25,6 @@ class FiltredVerticalLinePairsNode: public VisionNode {
   Data Function(InputData input_data);
 
  private:
-  bool VisibleCrossLine(const int &lowest_X_first_line_pointer,
-                        const int &bigest_X_first_line_pointer,
-                        const int &lowest_X_second_line_pointer,
-                        const int &bigest_X_second_line_pointer);
-
   REGISTER_DEC_TYPE(FiltredVerticalLinePairsNode);
 };
 

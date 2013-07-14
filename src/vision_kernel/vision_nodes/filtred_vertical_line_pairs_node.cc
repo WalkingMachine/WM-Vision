@@ -17,18 +17,24 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
+#include <boost/lexical_cast.hpp>
 #include <deque>
-#include <utility>
 
 enum {X1, Y1, X2, Y2};
 
 Data FiltredVerticalLinePairsNode::Function(InputData input_data) {
+  //Inputs
   std::shared_ptr<cv::vector<cv::Vec4i>> lines =
       input_data->at("input")->DataWithValidation<cv::vector<cv::Vec4i>>();
 
+  //Outputs
   Data output_data;
   std::shared_ptr<std::deque<std::pair<cv::Vec4i, cv::Vec4i>>>
       filtred_line_pairs(new std::deque<std::pair<cv::Vec4i, cv::Vec4i>>);
+
+  //Parameters
+  int minimum_lines_distance =
+      boost::lexical_cast<int>(parameters()["MinimumLinesDistance"]);
 
   if (parameters()["IsOnCUDA"] == "true") {
 
@@ -80,11 +86,8 @@ Data FiltredVerticalLinePairsNode::Function(InputData input_data) {
               bigest_X_second_line_pointer = &(*lines)[j][X1];
             }
 
-            if (!VisibleCrossLine(*lowest_X_first_line_pointer,
-                                  *bigest_X_first_line_pointer,
-                                  *lowest_X_second_line_pointer,
-                                  *bigest_X_second_line_pointer)) {
-
+            if (*lowest_X_second_line_pointer - *bigest_X_first_line_pointer >
+                minimum_lines_distance) {
               cv::Vec4i first_line(*(lowest_Y_first_line_pointer - 1),
                                    *lowest_Y_first_line_pointer,
                                    *(bigest_Y_first_line_pointer - 1),
@@ -109,19 +112,4 @@ Data FiltredVerticalLinePairsNode::Function(InputData input_data) {
   }
 
   return output_data;
-}
-
-bool FiltredVerticalLinePairsNode ::VisibleCrossLine(
-    const int &lowest_X_first_line_pointer,
-    const int &bigest_X_first_line_pointer,
-    const int &lowest_X_second_line_pointer,
-    const int &bigest_X_second_line_pointer) {
-  if (((lowest_X_first_line_pointer < lowest_X_second_line_pointer)
-      && (bigest_X_first_line_pointer > bigest_X_second_line_pointer))
-      || ((lowest_X_second_line_pointer < lowest_X_first_line_pointer)
-      && (bigest_X_second_line_pointer > bigest_X_first_line_pointer))) {
-    return true;
-  } else {
-    return false;
-  }
 }

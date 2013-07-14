@@ -78,53 +78,49 @@ Data TextureBottomOfDoorNode::Function(InputData input_data) {
       else
         bottom_y = &line_pair.second[Y2];
 
-
       if((top_y = *bottom_y - number_pixel_bottom_of_door) < 0) top_y =  0;
 
-      if (*lowest_x_second_line - *bigest_x_first_line > 0) {  //Remove near angular parallel lines
-        //Center of door
+      //Center of door
+      cv::Mat center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, top_y, *lowest_x_second_line - *bigest_x_first_line,  number_pixel_bottom_of_door));
 
-        cv::Mat center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, top_y, *lowest_x_second_line - *bigest_x_first_line,  number_pixel_bottom_of_door));
+      average_color_center = cv::mean(center_image_rgb_masked);  // Find average color in center
 
-        average_color_center = cv::mean(center_image_rgb_masked);  // Find average color in center
+      // LEFT_VS_CENTER or ALL
+      if(validationType != RIGHT_VS_CENTER) {
+        // Left of door
+        int x = *lowest_x_first_line - pixel_threshold;
+        if(x < 0) x = 0;
 
-        // LEFT_VS_CENTER or ALL
-        if(validationType != RIGHT_VS_CENTER) {
-          // Left of door
-          int x = *lowest_x_first_line - pixel_threshold;
-          if(x < 0) x = 0;
+        cv::Mat left_image_rgb_masked = (*image_rgb)(cv::Rect(x, top_y, pixel_threshold, number_pixel_bottom_of_door));
+        average_color_left = cv::mean(left_image_rgb_masked);  // Find average color at left
 
-          cv::Mat left_image_rgb_masked = (*image_rgb)(cv::Rect(x, top_y, pixel_threshold, number_pixel_bottom_of_door));
-          average_color_left = cv::mean(left_image_rgb_masked);  // Find average color at left
+        delta_left_vs_center = average_color_center.val[0] - average_color_left.val[0];
 
-          delta_left_vs_center = average_color_center.val[0] - average_color_left.val[0];
+        if (delta_left_vs_center > delta_min) ok = false;
+      }
 
-          if (delta_left_vs_center > delta_min) ok = false;
+      // RIGHT_VS_CENTER or ALL
+      if (validationType != LEFT_VS_CENTER) {
+        // Right of door
+        int temp_pixel_threshold;
+        if (pixel_threshold >= image_rgb->size().width) {
+          temp_pixel_threshold = image_rgb->size().width;
+        } else {
+          temp_pixel_threshold = pixel_threshold;
         }
 
-        // RIGHT_VS_CENTER or ALL
-        if (validationType != LEFT_VS_CENTER) {
-          // Right of door
-          int temp_pixel_threshold;
-          if (pixel_threshold >= image_rgb->size().width) {
-            temp_pixel_threshold = image_rgb->size().width;
-          } else {
-            temp_pixel_threshold = pixel_threshold;
-          }
+        cv::Mat right_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_second_line, top_y, temp_pixel_threshold, number_pixel_bottom_of_door));
+        average_color_right = cv::mean(right_image_rgb_masked); // Find average color at right
 
-          cv::Mat right_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_second_line, top_y, temp_pixel_threshold, number_pixel_bottom_of_door));
-          average_color_right = cv::mean(right_image_rgb_masked); // Find average color at right
+        delta_right_vs_center = average_color_center.val[0] - average_color_right.val[0];
 
-          delta_right_vs_center = average_color_center.val[0] - average_color_right.val[0];
+        if (delta_right_vs_center > delta_min) ok = false;
+      }
 
-          if (delta_right_vs_center > delta_min) ok = false;
-        }
-
-        if (ok) {
-          output_line_pairs->push_back(line_pair);
-          cv::rectangle(*output_image, cv::Rect(*bigest_x_first_line, top_y, *lowest_x_second_line - *bigest_x_first_line,  number_pixel_bottom_of_door), cv::Scalar(20 + color, 150 + color, 200 + color));
-          color += 42;
-        }
+      if (ok) {
+        output_line_pairs->push_back(line_pair);
+        cv::rectangle(*output_image, cv::Rect(*bigest_x_first_line, top_y, *lowest_x_second_line - *bigest_x_first_line,  number_pixel_bottom_of_door), cv::Scalar(20 + color, 150 + color, 200 + color));
+        color += 42;
       }
     }
 

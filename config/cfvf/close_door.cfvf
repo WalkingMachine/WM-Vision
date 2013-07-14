@@ -79,6 +79,9 @@ FiltredVerticalLinePairsNode
     {
         input verticalLine
     }
+    parameter {
+    	MinimumLinesDistance 30
+    }
 }
 
 ;DoorGapNode

@@ -89,60 +89,58 @@ Data DifferentColorBetwenDoorAndWallNode::Function(InputData input_data) {
       door_height = *bottom_y - *top_y;
 
       //Center of door
-      if (*lowest_x_second_line - *bigest_x_first_line > 0) {  //Remove near angular parallel lines
-        cv::Mat3b center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height));
+      cv::Mat3b center_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height));
 
-        average_color_center = cv::mean(center_image_rgb_masked);  // Find average color in center
-        cv::cvtColor(average_color_center, average_lab_color_center, CV_RGB2Lab);  //Convert RGB to CIELAB
+      average_color_center = cv::mean(center_image_rgb_masked);  // Find average color in center
+      cv::cvtColor(average_color_center, average_lab_color_center, CV_RGB2Lab);  //Convert RGB to CIELAB
 
-        // LEFT_VS_CENTER or ALL
-        if(validationType != RIGHT_VS_CENTER) {
-          // Left of door
-          int x = *lowest_x_first_line - pixel_threshold;
-          if(x < 0) x = 0;
+      // LEFT_VS_CENTER or ALL
+      if(validationType != RIGHT_VS_CENTER) {
+        // Left of door
+        int x = *lowest_x_first_line - pixel_threshold;
+        if(x < 0) x = 0;
 
-          cv::Mat3b left_image_rgb_masked = (*image_rgb)(cv::Rect(x, *top_y, pixel_threshold, door_height));
-          average_color_left = cv::mean(left_image_rgb_masked);  // Find average color at left
-          cv::cvtColor(average_color_left, average_lab_color_left, CV_RGB2Lab);  //Convert RGB to CIELAB
+        cv::Mat3b left_image_rgb_masked = (*image_rgb)(cv::Rect(x, *top_y, pixel_threshold, door_height));
+        average_color_left = cv::mean(left_image_rgb_masked);  // Find average color at left
+        cv::cvtColor(average_color_left, average_lab_color_left, CV_RGB2Lab);  //Convert RGB to CIELAB
 
-          left_vs_center_delta_e = DeltaE(average_lab_color_left.data[0],
-                                          average_lab_color_left.data[1],
-                                          average_lab_color_left.data[2],
-                                          average_lab_color_center.data[0],
-                                          average_lab_color_center.data[1],
-                                          average_lab_color_center.data[2]);
+        left_vs_center_delta_e = DeltaE(average_lab_color_left.data[0],
+                                        average_lab_color_left.data[1],
+                                        average_lab_color_left.data[2],
+                                        average_lab_color_center.data[0],
+                                        average_lab_color_center.data[1],
+                                        average_lab_color_center.data[2]);
 
-          if (left_vs_center_delta_e < delta_e_max) ok = false;
+        if (left_vs_center_delta_e < delta_e_max) ok = false;
+      }
+
+      // RIGHT_VS_CENTER or ALL
+      if (validationType != LEFT_VS_CENTER) {
+        // Right of door
+        int temp_pixel_threshold;
+        if (pixel_threshold >= image_rgb->size().width) {
+          temp_pixel_threshold = image_rgb->size().width;
+        } else {
+          temp_pixel_threshold = pixel_threshold;
         }
+        cv::Mat3b right_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_second_line, *top_y, temp_pixel_threshold, door_height));
+        average_color_right = cv::mean(right_image_rgb_masked); // Find average color at right
+        cv::cvtColor(average_color_right, average_lab_color_right, CV_RGB2Lab); //Convert RGB to CIELAB
 
-        // RIGHT_VS_CENTER or ALL
-        if (validationType != LEFT_VS_CENTER) {
-          // Right of door
-          int temp_pixel_threshold;
-          if (pixel_threshold >= image_rgb->size().width) {
-            temp_pixel_threshold = image_rgb->size().width;
-          } else {
-            temp_pixel_threshold = pixel_threshold;
-          }
-          cv::Mat3b right_image_rgb_masked = (*image_rgb)(cv::Rect(*bigest_x_second_line, *top_y, temp_pixel_threshold, door_height));
-          average_color_right = cv::mean(right_image_rgb_masked); // Find average color at right
-          cv::cvtColor(average_color_right, average_lab_color_right, CV_RGB2Lab); //Convert RGB to CIELAB
+        right_vs_center_delta_e = DeltaE(average_lab_color_right.data[0],
+                                         average_lab_color_right.data[1],
+                                         average_lab_color_right.data[2],
+                                         average_lab_color_center.data[0],
+                                         average_lab_color_center.data[1],
+                                         average_lab_color_center.data[2]);
 
-          right_vs_center_delta_e = DeltaE(average_lab_color_right.data[0],
-                                           average_lab_color_right.data[1],
-                                           average_lab_color_right.data[2],
-                                           average_lab_color_center.data[0],
-                                           average_lab_color_center.data[1],
-                                           average_lab_color_center.data[2]);
+        if (right_vs_center_delta_e < delta_e_max) ok = false;
+      }
 
-          if (right_vs_center_delta_e < delta_e_max) ok = false;
-        }
-
-        if (ok) {
-          output_line_pairs->push_back(line_pair);
-          cv::rectangle(*output_image, cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height), cv::Scalar(20 + color, 150 + color, 200 + color));
-          color += 42;
-        }
+      if (ok) {
+        output_line_pairs->push_back(line_pair);
+        cv::rectangle(*output_image, cv::Rect(*bigest_x_first_line, *top_y, *lowest_x_second_line - *bigest_x_first_line,  door_height), cv::Scalar(20 + color, 150 + color, 200 + color));
+        color += 42;
       }
     }
 
