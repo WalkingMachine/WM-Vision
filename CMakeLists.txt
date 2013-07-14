@@ -53,6 +53,7 @@ add_library(lib${PROJECT_NAME}Nodes SHARED
   src/vision_kernel/vision_nodes/filtred_vertical_line_pairs_node.cc
   src/vision_kernel/vision_nodes/different_color_betwen_door_and_wall_node.cc
   src/vision_kernel/vision_nodes/door_gap_node.cc
+  src/vision_kernel/vision_nodes/texture_bottom_of_door_node.cc
 
   src/vision_kernel/vision_debug_nodes/image_debug_node.cc
   

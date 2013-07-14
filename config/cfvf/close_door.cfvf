@@ -116,3 +116,22 @@ DifferentColorBetwenDoorAndWallNode
 		DeltaEMax 0.1
     }
 }
+
+TextureBottomOfDoorNode
+{
+    id textureBottomOfDoor
+    debug ImageDebugNode
+    dependence
+    {
+        edgeImage edgeDetection
+        verticalLinePairs filtredVerticalLinePairs
+    }
+    parameter
+    {
+    	IsOnCUDA false
+    	ValidationType ALL
+		NbrPixelLeftOrRightOfDoor 50
+		NbrPixelBottomOfDoor 60
+		DeltaMin 50
+    }
+}
