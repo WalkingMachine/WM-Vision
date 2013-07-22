@@ -16,15 +16,13 @@
 #ifndef WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_DOOR_GAP_NODE_H_
 #define WM_VISION_INCLUDE_VISION_KERNEL_VISION_NODES_DOOR_GAP_NODE_H_
 
-#include <string>
-#include <map>
-
-#include <opencv2/opencv.hpp>
 #include "../vision_node.h"
 #include "../data.h"
 #include "../vision_node_factory.h"
 
-enum { X1,Y1,X2,Y2 };
+#include <opencv2/opencv.hpp>
+
+enum {X1, Y1, X2, Y2};
 
 class DoorGapNode: public VisionNode {
  public:
@@ -32,12 +30,16 @@ class DoorGapNode: public VisionNode {
 
  private:
   int DistanceBetweenLines(cv::Vec4i const& line1,cv::Vec4i const& line2);
-  bool IsInBox(std::pair<cv::Vec4i*, cv::Vec4i*> const horizontal_line_pair,
-               std::pair<cv::Vec4i*, cv::Vec4i*> const vertical_line_pair,
-               int const& HorizontalBoxThreshold,
-               int const& VerticalBoxThreshold);
-  int LineHorizontalBoxValue(int x1, int y1, int x2, int y2);
+  bool IsInBox(const std::pair<cv::Vec4i*, cv::Vec4i*> &horizontal_line_pair,
+               const std::pair<cv::Vec4i, cv::Vec4i> &vertical_line_pair,
+               const int &horizontal_box_threshold,
+               const int &vertical_box_threshold);
+  bool LineHorizontalBoxValue(int x1, int x2, int threshhold);
   int LineVerticalBoxValue(int y1, int y2);
+  bool VisibleCrossLine(const int lowest_y_first_line,
+                        const int bigest_y_first_line,
+                        const int lowest_y_second_line,
+                        const int bigest_y_second_line);
   REGISTER_DEC_TYPE(DoorGapNode);
 };
 

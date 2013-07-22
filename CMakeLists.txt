@@ -6,7 +6,7 @@ if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
 endif()
  
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp rospy message_generation cv_bridge pcl pcl_ros)
+find_package(catkin REQUIRED COMPONENTS std_msgs roscpp rospy message_generation cv_bridge pcl_ros)
 find_package(OpenCV 2.4 REQUIRED)
 find_package(PCL 1.6 REQUIRED COMPONENTS)
 

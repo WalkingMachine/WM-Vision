@@ -1,3 +1,6 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door base;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 InputImageNode
 {
     id inputImage
@@ -42,6 +45,7 @@ EdgeDetectionNode
 LineDetectionNode
 {
     id lineDetection
+;    debug ImageDebugNode
     dependence
     {
         input edgeDetection
@@ -84,57 +88,116 @@ FiltredVerticalLinePairsNode
     }
 }
 
-;DoorGapNode
-;{
-;	id doorGap
-;	debug ImageDebugNode
-;	dependence
-;	{
-;		horizontalsLinesVector hlineDetection 
-;		verticalsLinesDeque vlineDetection 
-;	}
-;	parameter
-;    {
-;        IsOnCUDA false
-;        MaxDoorGap 10
-;        HorizontalBoxThreshold 20
-;        VericalBoxThreshold 20   
-;     }
-;}
-
-DifferentColorBetwenDoorAndWallNode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door feature;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DoorGapNode
 {
-    id differentColorBetwenDoorAndWall
-    debug ImageDebugNode
-    dependence
-    {
-        imageRGB inputImageRGB
-        verticalLinePairs filtredVerticalLinePairs
-    }
-    parameter
+	id doorGap
+	debug ImageDebugNode
+	dependence
+	{
+		horizontalsLinesVector lineDetection 
+		verticalsLinesDeque filtredVerticalLinePairs 
+	}
+	parameter
     {
         IsOnCUDA false
-    	ValidationType ALL
-		NbrPixelLeftOrRightOfDoor 20
-		DeltaEMax 0.1
-    }
+        MaxDoorGap 10
+        HorizontalBoxThreshold 20
+        VericalBoxThreshold 20   
+     }
 }
 
-TextureBottomOfDoorNode
-{
-    id textureBottomOfDoor
-    debug ImageDebugNode
-    dependence
-    {
-        edgeImage edgeDetection
-        verticalLinePairs filtredVerticalLinePairs
-    }
-    parameter
-    {
-    	IsOnCUDA false
-    	ValidationType ALL
-		NbrPixelLeftOrRightOfDoor 50
-		NbrPixelBottomOfDoor 60
-		DeltaMin 50
-    }
-}
+;DifferentColorBetwenDoorAndWallNode
+;{
+;    id differentColorBetwenDoorAndWall
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        imageRGB inputImageRGB
+;        verticalLinePairs filtredVerticalLinePairs
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;    	ValidationType ALL
+;		NbrPixelLeftOrRightOfDoor 20
+;		DeltaEMax 0.1
+;    }
+;}
+
+;TextureBottomOfDoorNode
+;{
+;    id textureBottomOfDoor
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        edgeImage edgeDetection
+;        verticalLinePairs filtredVerticalLinePairs
+;    }
+;    parameter
+;    {
+;    	IsOnCUDA false
+;    	ValidationType ALL
+;		NbrPixelLeftOrRightOfDoor 50
+;		NbrPixelBottomOfDoor 60
+;		DeltaMin 50
+;    }
+;}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door handle;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;EdgeDetectionNode
+;{
+;    id handleEdgeDetection
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        input inputImage
+;    }
+;    parameter
+;    {
+;        BlurKHeight 2
+;        BlurKWidth 2
+;        IsOnCUDA false
+;        L2gradient false
+;        Threshold1 20
+;        Threshold2 40
+;    }
+;}
+;
+;LineDetectionNode
+;{
+;    id handleLineDetection
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        input handleEdgeDetection
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;        MaxLineGap 20
+;        MinLineLength 5
+;        Rho 1
+;        Theta 180
+;        Threshold 20
+;    }
+;}
+;
+;ParallelLinesNode
+;{
+;    id handleVerticalLine
+;    dependence
+;    {
+;        lines handleLineDetection
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;		Angle 90
+;		AngleTolerance 10
+;    }
+;}
