@@ -1,0 +1,12 @@
+<library path="lib/liblibwm_visionrqt">
+  <class name="rqt_vision_tools/VisionTools" type="rqt_vision_tools::VisionTools" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      A GUI plugin to control wm_vision_kernel.
+    </description>
+    <qtgui>
+      <label>Vision Tools</label>
+      <icon type="theme">image-x-generic</icon>
+      <statustip>A GUI plugin to control wm_vision_kernel.</statustip>
+    </qtgui>
+  </class>
+</library>
