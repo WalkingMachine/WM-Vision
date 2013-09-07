@@ -1,0 +1,25 @@
+find_object_boundingbox
+{
+    door close_door
+    glass close_door
+    vase close_door
+}
+
+find_object_detail
+{
+    door close_door
+    glass close_door
+    vase close_door
+}
+
+find_person
+{
+    person close_door
+}
+
+find_gesture
+{
+    wave close_door
+    punch close_door
+    peace_sign close_door
+}

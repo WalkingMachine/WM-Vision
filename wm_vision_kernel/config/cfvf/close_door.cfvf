@@ -1,0 +1,218 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door base;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+InputImageNode
+{
+    id inputImage
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+        SourceTopic /camera/rgb/image_mono
+    }
+}
+
+InputImageNode
+{
+    id inputImageRGB
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+       SourceTopic /camera/rgb/image_raw
+    }
+}
+
+EdgeDetectionNode
+{
+    id edgeDetection
+    debug ImageDebugNode
+    dependence
+    {
+        input inputImage
+    }
+    parameter
+    {
+        BlurKHeight 3
+        BlurKWidth 3
+        IsOnCUDA false
+        L2gradient false
+        Threshold1 20
+        Threshold2 80
+    }
+}
+
+LineDetectionNode
+{
+    id lineDetection
+;    debug ImageDebugNode
+    dependence
+    {
+        input edgeDetection
+    }
+    parameter
+    {
+        IsOnCUDA false
+        MaxLineGap 20
+        MinLineLength 10
+        Rho 1
+        Theta 180
+        Threshold 80
+    }
+}
+
+ParallelLinesNode
+{
+    id verticalLine
+    dependence
+    {
+        lines lineDetection
+    }
+    parameter
+    {
+        IsOnCUDA false
+		Angle 0
+		AngleTolerance 10
+    }
+}
+
+ParallelLinesNode
+{
+    id horizontalLine
+    dependence
+    {
+        lines lineDetection
+    }
+    parameter
+    {
+        IsOnCUDA false
+		Angle 90
+		AngleTolerance 15
+    }
+}
+
+FiltredVerticalLinePairsNode
+{
+    id filtredVerticalLinePairs
+    dependence
+    {
+        input verticalLine
+    }
+    parameter {
+    	MinimumLinesDistance 30
+    }
+}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door feature;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DoorGapNode
+{
+	id doorGap
+	debug ImageDebugNode
+	dependence
+	{
+		horizontalsLinesVector lineDetection 
+		verticalsLinesDeque filtredVerticalLinePairs 
+	}
+	parameter
+    {
+        IsOnCUDA false
+        MaxDoorGap 10
+        HorizontalBoxThreshold 20
+        VericalBoxThreshold 20   
+     }
+}
+
+;DifferentColorBetwenDoorAndWallNode
+;{
+;    id differentColorBetwenDoorAndWall
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        imageRGB inputImageRGB
+;        verticalLinePairs filtredVerticalLinePairs
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;    	ValidationType ALL
+;		NbrPixelLeftOrRightOfDoor 20
+;		DeltaEMax 0.1
+;    }
+;}
+
+;TextureBottomOfDoorNode
+;{
+;    id textureBottomOfDoor
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        edgeImage edgeDetection
+;        verticalLinePairs filtredVerticalLinePairs
+;    }
+;    parameter
+;    {
+;    	IsOnCUDA false
+;    	ValidationType ALL
+;		NbrPixelLeftOrRightOfDoor 50
+;		NbrPixelBottomOfDoor 60
+;		DeltaMin 50
+;    }
+;}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;Door handle;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;EdgeDetectionNode
+;{
+;    id handleEdgeDetection
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        input inputImage
+;    }
+;    parameter
+;    {
+;        BlurKHeight 2
+;        BlurKWidth 2
+;        IsOnCUDA false
+;        L2gradient false
+;        Threshold1 20
+;        Threshold2 40
+;    }
+;}
+;
+;LineDetectionNode
+;{
+;    id handleLineDetection
+;    debug ImageDebugNode
+;    dependence
+;    {
+;        input handleEdgeDetection
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;        MaxLineGap 20
+;        MinLineLength 5
+;        Rho 1
+;        Theta 180
+;        Threshold 20
+;    }
+;}
+;
+;ParallelLinesNode
+;{
+;    id handleVerticalLine
+;    dependence
+;    {
+;        lines handleLineDetection
+;    }
+;    parameter
+;    {
+;        IsOnCUDA false
+;		Angle 90
+;		AngleTolerance 10
+;    }
+;}

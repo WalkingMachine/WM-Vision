@@ -1,0 +1,7 @@
+<launch>
+  <node name="vision_kernel" pkg="wm_vision" type="wm_vision" launch-prefix="xterm -e gdb -ex  --args"/>
+
+  <param name="debug_mode" type="bool" value="true" />
+  <param name="cfvf_path" type="string" value="$(find wm_vision)/config/cfvf/" />
+  <param name="catalog_path" type="string" value="$(find wm_vision)/config/catalog.info" />
+</launch>
