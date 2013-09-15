@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->parse_catalog_push_button, SIGNAL(clicked()), this, SLOT(LoadCatalog()));
     connect(ui->action_combo_box, SIGNAL(currentIndexChanged(QString)), this, SLOT(LoadObject(QString)));
-    connect(ui->object_combo_box, SIGNAL(currentIndexChanged(QString)), this, SLOT(LoadCFVTPath(QString)));
+    connect(ui->object_combo_box, SIGNAL(currentIndexChanged(QString)), this, SLOT(LoadCFVFPath(QString)));
     connect(ui->restart_push_button, SIGNAL(clicked()), this, SLOT(RestartVisionFlow()));
     connect(ui->start_push_button, SIGNAL(clicked()), this, SLOT(StartVisionFlow()));
     connect(ui->stop_push_button, SIGNAL(clicked()), this, SLOT(StopVisionFlow()));
@@ -39,7 +39,7 @@ void MainWindow::LoadObject(QString action) {
     }
 }
 
-void MainWindow::LoadCFVTPath(QString object) {
+void MainWindow::LoadCFVFPath(QString object) {
     if (!object.isEmpty()) {
         std::string cfvf_file_name = catalog[ui->action_combo_box->currentText().toStdString()].find(object.toStdString())->second;
 
@@ -47,11 +47,11 @@ void MainWindow::LoadCFVTPath(QString object) {
     }
 }
 
-void MainWindow::SaveCFVT() {
+void MainWindow::SaveCFVF() {
 	((VisionTree*)ui->vision_tree_widget)->SaveCFVT();
 }
 
-void MainWindow::StartVisionTree() {
+void MainWindow::StartVisionFlow() {
 	ros::NodeHandle n;
 	ros::ServiceClient client = n.serviceClient<wm_vision_kernel::wm_vision_interface_flow>("wm_vision_kernel");
 	wm_vision_kernel::wm_vision_interface_flow srv;
@@ -62,7 +62,7 @@ void MainWindow::StartVisionTree() {
 	client.call(srv);
 }
 
-void MainWindow::StopVisionTree() {
+void MainWindow::StopVisionFlow() {
 	ros::NodeHandle n;
 	ros::ServiceClient client = n.serviceClient<wm_vision_kernel::wm_vision_interface_flow>("wm_vision_kernel");
 	wm_vision_kernel::wm_vision_interface_flow srv;
@@ -73,8 +73,8 @@ void MainWindow::StopVisionTree() {
 	client.call(srv);
 }
 
-void MainWindow::RestartVisionTree() {
-	StopVisionTree();
-	SaveCFVT();
-	StartVisionTree();
+void MainWindow::RestartVisionFlow() {
+	StopVisionFlow();
+	SaveCFVF();
+	StartVisionFlow();
 }

@@ -18,7 +18,7 @@
 #include "../include/vision_kernel/vision_interface.h"
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "vision_kernel");
+  ros::init(argc, argv, "wm_vision_kernel");
   ros::NodeHandle node_handle;
   VisionInterface interface;
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
       &VisionInterface::CallbackFlow,
       &interface);
 
-  ROS_INFO("vision_kernel initialized");
+  ROS_INFO("wm_vision_kernel initialized");
   ros::spin();
 
   return 0;

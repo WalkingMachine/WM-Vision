@@ -23,16 +23,16 @@ public:
 public slots:
     void LoadCatalog();
     void LoadObject(QString action);
-    void LoadCFVTPath(QString object);
-    void StartVisionTree();
-    void StopVisionTree();
-    void RestartVisionTree();
+    void LoadCFVFPath(QString object);
+    void StartVisionFlow();
+    void StopVisionFlow();
+    void RestartVisionFlow();
     
 private:
     Ui::MainWindow *ui;
     VisionParser::CFVTPathMap catalog;
 
-    void SaveCFVT();
+    void SaveCFVF();
 };
 
 #endif // MAINWINDOW_H
