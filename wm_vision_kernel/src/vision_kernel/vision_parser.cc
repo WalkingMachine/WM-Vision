@@ -27,8 +27,9 @@ void VisionParser::ParseCatalogCFVF(
   ros::NodeHandle node_handle;
   std::string catalog_path;
 
-  if (!node_handle.getParamCached("catalog_path",catalog_path)) // DO NOT COMMIT
-	  catalog_path = "/home/escaladeur/wm_workspace/wm_sofware/src/wm_vision/config/catalog.info";
+  if (!node_handle.getParamCached("catalog_path",catalog_path)) {
+	  throw CatalogPathException();
+  }
 
   try {
     ptree property_tree;
@@ -46,7 +47,7 @@ void VisionParser::ParseCatalogCFVF(
       }
     }
   } catch (const std::exception& e) {
-      throw e;
+      throw InvalidCatalogException();
   }
 }
 
@@ -93,6 +94,6 @@ void VisionParser::ParseVisionFlow(std::string file_path, VisionFlow &flow) {
 
     // TODO(Keaven Martin) Valid dependence
   } catch (const std::exception &e) {
-    throw;
+    throw InvalidCfvfException(file_path);
   }
 }

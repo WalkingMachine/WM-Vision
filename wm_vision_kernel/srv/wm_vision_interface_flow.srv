@@ -3,4 +3,5 @@ string object_name
 string action
 float32 frequency
 ---
+int32 error
 string topic_name

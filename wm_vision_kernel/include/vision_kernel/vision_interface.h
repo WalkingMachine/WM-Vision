@@ -40,6 +40,15 @@ class VisionInterface {
 	                const std::string &object_name,
 	                const std::string &flow_name,
 	                const float &frequency);
+
+	/**
+	 *
+	 */
+  class CfvfPathException : public std::exception {
+    virtual const char* what() const throw() {
+        return "CFVF path not set in the parameters";
+      }
+  };
 };
 
 #endif  //  WM_VISION_INCLUDE_VISION_KERNEL_VISION_INTERFACE_HPP_
