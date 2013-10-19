@@ -2,14 +2,13 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 02/07/2013
  *
  * Programmer: Julien Côté
  *
- * Description:
+ * Description: The vision interface was the interface between the wm_vision_kernel ans ROS.
  *
  */
 
@@ -19,8 +18,12 @@
 
 #include "../../include/vision_kernel/vision_parser.h"
 
+/**
+ * Creates the initial catalog map holding the paths to the trees
+ * configuration files
+ */
 VisionInterface::VisionInterface() {
-  // parse catalog.info for the cfvf paths, store the info in path_map
+  // Parse catalog.info for the cfvf paths, store the info in path_map
   try {
     VisionParser::ParseCatalogCFVF(path_map_);
   } catch(const std::exception& e) {
@@ -28,6 +31,13 @@ VisionInterface::VisionInterface() {
   }
 }
 
+/**
+ * The method used by the ros:Service when it is called
+ *
+ * @param request contains the parameters as defined in visionInterface.srv
+ * @param response contains the return value as defined in visionInterface.srv
+ * @return  True if succeeded, False if failed and won't send the Response
+ */
 bool VisionInterface::CallbackFlow(
     wm_vision_kernel::wm_vision_interface_flow::Request& request,
     wm_vision_kernel::wm_vision_interface_flow::Response& response) {
@@ -36,11 +46,11 @@ bool VisionInterface::CallbackFlow(
 
   std::string flow_name;
 
-  // store request paramter into a std::pair
+  // Store request paramter into a std::pair
   std::pair<std::string, std::string> key(request.task_name,
                                           request.object_name);
 
-  // exit if the requested task isn't in catalog.info
+  // Exit if the requested task isn't in catalog.info
   auto path_iterator = path_map_.find(key);
   if(path_iterator == path_map_.end()) {
     return false;
@@ -68,6 +78,12 @@ bool VisionInterface::CallbackFlow(
 	return true;
 }
 
+/**
+ * Create a vision flow
+ * @param id_task the task to execute. Refer to the enum for the names
+ * @param id_object The object, person or gesture to be found
+ * @param tree_name The name of the vision_tree to call
+ */
 void VisionInterface::CreateFlow(const std::string &task_name,
                                  const std::string &object_name,
                                  const std::string &flow_name,

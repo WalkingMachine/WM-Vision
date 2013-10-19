@@ -2,14 +2,13 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 02/26/2013
  *
  * Programmer: Julien Côté
  *
- * Description:
+ * Description: ROS Topic input manager
  *
  */
 
@@ -24,20 +23,37 @@
 
 #include "input.h"
 
+/**
+ * ROS Topic input manager singleton (where the template is the topic type)
+ * One InputManager by topic message type
+ */
 template <class T>
 class InputManager {
  public:
+  /**
+   * Get singleton instance
+   * @return
+   */
   static InputManager<T>& GetInstance() {
     static InputManager<T> instance_;
     return instance_;
   };
 
+  /**
+   *
+   * @param topic_name
+   * @return
+   */
   std::shared_ptr<T> GetInput(const std::string &topic_name) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto input_iterator = input_list_.find(topic_name);
     return input_iterator->second->Poll();
   };
 
+  /**
+   * Subscribe to a new ROS Topic
+   * @param topic_name
+   */
   void AddSubscriber(const std::string &topic_name) {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -51,12 +67,21 @@ class InputManager {
     }
   };
 
+  /**
+   * Verify if a ROS Topic has new data
+   * @param topic_name
+   * @return True if the topic has some new data
+   */
   bool has_data(const std::string &topic_name) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto input_iterator = input_list_.find(topic_name);
     return input_iterator->second->has_data();
   };
 
+  /**
+   * Remove subscription to a ROS Topic
+   * @param topic_name
+   */
   void RemoveSubscriber(const std::string &topic_name) {
    std::lock_guard<std::mutex> lock(mutex_);
 
@@ -78,8 +103,22 @@ class InputManager {
   std::map<std::string, std::shared_ptr<Input<T>>> input_list_;
 
   // Required private members for the singleton
+  /**
+   * Constructor
+   */
   InputManager() {};
+
+  /**
+   * Copy Constructor
+   * @param
+   */
   InputManager(const InputManager<T>&) {};
+
+  /**
+   * Copy operator
+   * @param
+   * @return
+   */
   InputManager& operator= (const InputManager<T>&);
 };
 

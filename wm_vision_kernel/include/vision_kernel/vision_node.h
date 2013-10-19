@@ -23,8 +23,6 @@
 
 #include "data.h"
 
-// TODO(Keaven) pointer
-
 class VisionNode : public std::enable_shared_from_this<VisionNode> {
  public:
   // Type definition

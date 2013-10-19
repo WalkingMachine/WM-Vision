@@ -2,15 +2,14 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 02/24/2013
  *
  * Programmer: Julien Côté, Keaven Martin
  *
- * Description: VisionCfvfParser is used to parse a file which holds the path
- *              to the trees to execute.
+ * Description: The VisionParser namespace contain all parser of wm_vision_kernel
+ * 				(cathalog and vision flow parser)
  *
  */
 

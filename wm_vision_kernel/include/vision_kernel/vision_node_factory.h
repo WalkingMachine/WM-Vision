@@ -9,7 +9,7 @@
  *
  * Programmer: Keaven Martin
  *
- * Description:
+ * Description: Vision node factory
  *
  */
 
@@ -22,6 +22,8 @@
 #include <memory>
 
 #include "vision_node.h"
+
+// TODO(Keaven Martin): Make a lot of improvement
 
 class VisionNode;
 

@@ -2,14 +2,13 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 04/13/2013
  *
  * Programmer: Julien Côté, Keaven Martin
  *
- * Description:
+ * Description: Main function of vision kernel
  *
  */
 

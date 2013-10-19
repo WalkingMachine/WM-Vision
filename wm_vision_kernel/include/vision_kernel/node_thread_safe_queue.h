@@ -2,8 +2,7 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 02/04/2013
  *
@@ -24,13 +23,23 @@
 #include "vision_node.h"
 #include "data.h"
 
+/**
+ * Queue for node with data with thread safe
+ */
 class NodeThreadSafeQueue {
  public:
   typedef std::pair<std::shared_ptr<VisionNode>, std::shared_ptr<Data>> NodeWithData;
+  /**
+   * Destructor
+   */
   ~NodeThreadSafeQueue() {
     Clear();
   }
 
+  /**
+   * Push an item in the queue
+   * @param node_with_data
+   */
   void Enqueue(NodeWithData node_with_data) {
     // Acquire lock on the queue
     std::unique_lock<std::mutex> lock(mutex_);
@@ -42,6 +51,10 @@ class NodeThreadSafeQueue {
     condition_.notify_one();
   }
 
+  /**
+   * Pop an item from the queues
+   * @return Node with data
+   */
   NodeWithData Dequeue() {
     // Acquire lock on the queue
     std::unique_lock<std::mutex> lock(mutex_);
@@ -59,6 +72,9 @@ class NodeThreadSafeQueue {
     return result;
   }
 
+  /**
+   * Clear queue
+   */
   void Clear() {
     std::unique_lock<std::mutex> lock(mutex_);
 
@@ -68,7 +84,7 @@ class NodeThreadSafeQueue {
   }
 
  private:
-  std::queue<NodeWithData> queue_;  // Use STL queue to store data
+  std::queue<NodeWithData> queue_;
   std::mutex mutex_;  // The mutex to synchronise on
   std::condition_variable condition_;  // The condition to wait for
 };

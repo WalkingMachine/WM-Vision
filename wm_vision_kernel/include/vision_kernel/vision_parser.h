@@ -2,8 +2,7 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 02/24/2013
  *
@@ -31,6 +30,11 @@ namespace VisionParser{
   void ParseCatalogCFVF(
       std::map<std::pair<std::string,std::string>, std::string> &path_map);
 
+  /**
+   * Parse a .cfvf config file to create a visaion flow
+   * @param file_path
+   * @param flow The flow to create
+   */
   void ParseVisionFlow(std::string file_path, VisionFlow &flow);
 
   class NodeParameterException : public std::exception {

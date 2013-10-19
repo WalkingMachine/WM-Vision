@@ -18,24 +18,15 @@
 
 #include <map>
 #include <memory>
-#include <wm_vision_kernel/wm_vision_interface_flow.h>  //TODO(Julien) Verif
+
+//ROS services includes
+#include <wm_vision_kernel/wm_vision_interface_flow.h>
 
 #include "vision_flow.h"
 
 class VisionInterface {
  public:
-  /**
-   * Creates the initial catalog map  holding the paths to the trees
-   * configuration files
-   */
   VisionInterface();
-  /**
-   * The method used by the ros:Service when it is called
-   *
-   * @param request contains the parameters as defined in visionInterface.srv
-   * @param response contains the return value as defined in visionInterface.srv
-   * @return  True if succeeded, False if failed and won't send the Response
-   */
 	bool CallbackFlow(wm_vision_kernel::wm_vision_interface_flow::Request& request,
 	                  wm_vision_kernel::wm_vision_interface_flow::Response& response);
 
@@ -45,12 +36,6 @@ class VisionInterface {
 	  flow_container_;
 	std::map<std::pair<std::string,std::string>, std::string> path_map_;
 
-	/**
-	 *
-	 * @param id_task the task to execute. Refer to the enum for the names
-	 * @param id_object The object, person or gesture to be found
-	 * @param tree_name The name of the vision_tree to call
-	 */
 	void CreateFlow(const std::string &task_name,
 	                const std::string &object_name,
 	                const std::string &flow_name,

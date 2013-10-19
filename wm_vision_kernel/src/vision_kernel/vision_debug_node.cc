@@ -2,8 +2,7 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 26/02/2013
  *
@@ -17,18 +16,34 @@
 
 #include <ros/ros.h>
 
+/**
+ * Constructor
+ */
 VisionDebugNode::VisionDebugNode() {
   vision_node_ = nullptr;
 }
 
+/**
+ * Destructor
+ */
 VisionDebugNode::~VisionDebugNode() {
 
 }
 
+/**
+ * Set vision node attached to this vision debuf node
+ * @param vision_node
+ */
 void VisionDebugNode::set_vision_node(std::shared_ptr<VisionNode> vision_node) {
   vision_node_ = vision_node;
 }
 
+/**
+ * Call back function used by the vision node when the primary function is finished
+ * (only use when a debug node is linked to a vision node)
+ * @param vision_node
+ * @param output_data
+ */
 void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                                        std::shared_ptr<Data> output_data) {
   bool debug;
@@ -49,7 +64,6 @@ void VisionDebugNode::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
 
 /**
  * Debug Node thread
- * @param input_data
  */
 void VisionDebugNode::Thread() {
   do {

@@ -24,7 +24,7 @@
 
 class VisionDebugNode : public VisionNode {
  public:
-  // Constructor and Destructor;
+  // Constructor and Destructor
   VisionDebugNode();
   virtual ~VisionDebugNode();
 

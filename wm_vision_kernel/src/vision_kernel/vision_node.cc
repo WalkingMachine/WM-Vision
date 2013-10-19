@@ -2,14 +2,13 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 12/06/2012
  *
  * Programmer: Keaven Martin
  *
- * Description: Flow's children
+ * Description: Flow's children. A vision node represent a threaded function.
  *
  */
 
@@ -37,7 +36,7 @@ VisionNode::~VisionNode() {
 
 /**
  * Get node identifier
- * @return
+ * @return identifier
  */
 std::string VisionNode::id() {
   return id_;
@@ -45,7 +44,7 @@ std::string VisionNode::id() {
 
 /**
  * Set node identifier
- * @param id
+ * @param identifier
  */
 void VisionNode::set_id(const std::string &id) {
   id_ = id;
@@ -53,7 +52,7 @@ void VisionNode::set_id(const std::string &id) {
 
 /**
  * Get node parameters
- * @return
+ * @return parameters
  */
 VisionNode::Parameters VisionNode::parameters() {
   return parameters_;
@@ -69,7 +68,7 @@ void VisionNode::set_parameters(const Parameters &parameters) {
 
 /**
  * Get node dependences
- * @return
+ * @return dependences
  */
 VisionNode::Dependences VisionNode::dependences() {
   return dependences_;
@@ -83,14 +82,26 @@ void VisionNode::set_dependences(const Dependences &dependences) {
   dependences_ = dependences;
 }
 
+/**
+ * Get vision flow name
+ * @return Vision flow name
+ */
 std::string VisionNode::flow_name() {
   return flow_name_;
 }
 
+/**
+ * Set vision flow name
+ * @param flow_name
+ */
 void VisionNode::set_flow_name(const std::string &flow_name) {
   flow_name_ = flow_name;
 }
 
+/**
+ * Set vision flow callback (called at the end of the node function)
+ * @param callback_function
+ */
 void VisionNode::set_flow_callback_function_(
     boost::function<void(std::shared_ptr<VisionNode>,
                          std::shared_ptr<Data>)> callback_function) {
@@ -124,6 +135,9 @@ void VisionNode::StartOneIteration(InputData input_data) {
   }
 }
 
+/**
+ * Stop vision node (at the end of the node function)
+ */
 void VisionNode::Stop() {
       must_stop_ = true;
       thread_start_condition_.notify_one();
@@ -134,12 +148,12 @@ void VisionNode::Stop() {
 
 /**
  * Node's thread
- * @param input_data
  */
 void VisionNode::Thread() {
   do {
     boost::mutex::scoped_lock lock(thread_mutex_);
-    std::shared_ptr<Data> output_data(new Data(Function(input_data_)));
+
+    std::shared_ptr<Data> output_data(new Data(Function(input_data_))); // Start node function and output data
 
     std::shared_ptr<VisionNode> this_vision_node(shared_from_this());
     flow_callback_function_(this_vision_node, output_data);  // Call callback function
@@ -149,6 +163,11 @@ void VisionNode::Thread() {
   thread_stoped_condition_.notify_one();
 }
 
+/**
+ * Force call of vision flow callback
+ * @param vision_node Sender (Vision node)
+ * @param data Vision node data
+ */
 void VisionNode::call_flow_callback_function(
     std::shared_ptr<VisionNode> vision_node,
     std::shared_ptr<Data> data) {

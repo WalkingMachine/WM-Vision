@@ -2,8 +2,7 @@
  * Copyright 2012-2013 Walking Machine
  *
  * Project: Walking Machine Sara robot 2012-2013
- * Package: wm_vision
- * Node: vision_kernel
+ * Package: wm_vision_kernel
  *
  * Creation date: 11/29/2012
  *
@@ -34,7 +33,8 @@
 
 /**
  * Constructor
- * @param wanted_frequency
+ * @param name Vision flow name
+ * @param wanted_frequency Wanted frequency
  */
 VisionFlow::VisionFlow(const std::string &name, const float &wanted_frequency) {
   must_stop_ = true;
@@ -58,10 +58,11 @@ VisionFlow::~VisionFlow() {
 
 /**
  * Add one node at the flow before start
- * @param type VisionNode type(name)
+ * @param type Vision node type(name)
  * @param id
  * @param dependences
  * @param parameters
+ * @param debug_node
  * @return Validation
  */
 bool VisionFlow::AddNode(const std::string &type,
@@ -114,8 +115,8 @@ bool VisionFlow::IsValid() {
 
 /**
  * Callback function use when a node is finished
- * @param visionNode
- * @param outputData
+ * @param vision_node
+ * @param node_output_data
  */
 void VisionFlow::CallbackFunction(std::shared_ptr<VisionNode> vision_node,
                                   std::shared_ptr<Data> node_output_data) {
@@ -164,7 +165,7 @@ void VisionFlow::set_wanted_frequency(const float &wanted_frequency) {
 
 /**
  * Get wanted vision flow process frequency
- * @return wanted frequency
+ * @return Wanted frequency
  */
 float VisionFlow::wanted_frequency() {
   std::lock_guard<std::mutex> lock(wanted_frequency_mutex_);
@@ -173,17 +174,25 @@ float VisionFlow::wanted_frequency() {
 
 /**
  * Get current vision flow process frequency
- * @return current frequency
+ * @return Current frequency
  */
 float VisionFlow::current_frequency() {
   std::lock_guard<std::mutex> lock(current_frequency_mutex_);
   return current_frequency_;
 }
 
+/**
+ * Set vision flow name
+ * @param name
+ */
 void VisionFlow::set_name(std::string name) {
   name_ = name;
 }
 
+/**
+ * Get vision flow name
+ * @return Vision flow name
+ */
 std::string VisionFlow::name() {
   return name_;
 }
@@ -227,6 +236,7 @@ void VisionFlow::Thread() {
  * Thread process for vision nodes gestion
  */
 // TODO(Keaven Martin) Comment and clean
+// TODO(Keaven Martin) Change the iteration for a linked flow in 2.0
 void VisionFlow::Process() {
   // First time take no dependence nodes
   for (auto &vision_node : vision_nodes_) {
