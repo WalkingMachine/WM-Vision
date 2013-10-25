@@ -18,6 +18,8 @@
 
 #include "../../include/vision_kernel/vision_parser.h"
 
+#include "../../include/vision_kernel/vision_errors.h"
+
 /**
  * Creates the initial catalog map holding the paths to the trees
  * configuration files
@@ -27,7 +29,7 @@ VisionInterface::VisionInterface() {
   try {
     VisionParser::ParseCatalogCFVF(path_map_);
   } catch(const std::exception& e) {
-	  ROS_WARN("%s",e.what());
+	  ROS_ERROR("Invalid syntax in catalog configuration file : %s",e.what());
   }
 }
 
@@ -45,7 +47,7 @@ bool VisionInterface::CallbackFlow(
   float frequency = (request.frequency == 0 ? 30 : request.frequency);
 
   std::string flow_name;
-  response.error = 0;
+  response.error = vision_errors::NoError;
 
   if (!path_map_.empty())
   {
@@ -56,7 +58,7 @@ bool VisionInterface::CallbackFlow(
 	  // exit if the requested task isn't in catalog.info
 	  auto path_iterator = path_map_.find(key);
 	  if(path_iterator == path_map_.end()) {
-	    return false;
+	    return false; // TODO (m-a) : Continue and set an error
 	  } else {
 	    flow_name = path_iterator->second;
 	  }
@@ -68,29 +70,27 @@ bool VisionInterface::CallbackFlow(
         flow_iterator->second->Stop();
         flow_container_.erase(flow_iterator);
       } else if(request.action == "start") {
-        //task_iterator->second->Start();
       } else if(request.action == "set_frequency") {
         flow_iterator->second->set_wanted_frequency(frequency);
       } else {
         response.topic_name = "invalid Action name";
-        ROS_WARN("Invalid action name");
-        response.error = 1;
+        response.error = vision_errors::InvalidActionName;
+        ROS_ERROR("Invalid action name");
       }
 	  } else {
 	    try {
 	      CreateFlow(request.task_name, request.object_name, flow_name, frequency);
         response.topic_name = flow_name;
 	    } catch (const std::exception& e) {
-	      ROS_WARN("%s", e.what());
-	      response.error = 1;
+	      ROS_ERROR("Invalid syntax in the cfvf : %s", e.what());
+	      response.error = vision_errors::FlowCreationError;
 	    }
 	  }
   }
   else
   {
-	  // TODO(M-A) Error management (error #)
-	  response.error = 1;
-	  ROS_WARN("Catalog configuration file not loaded");
+	  response.error = vision_errors::CatalogNotLoaded;
+	  ROS_ERROR("Catalog configuration file not loaded");
   }
   return true;
 }

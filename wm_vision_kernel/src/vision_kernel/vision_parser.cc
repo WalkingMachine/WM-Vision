@@ -27,6 +27,7 @@ void VisionParser::ParseCatalogCFVF(
   ros::NodeHandle node_handle;
   std::string catalog_path;
 
+  // Get the ros parameter catalog_path exist
   if (!node_handle.getParamCached("catalog_path",catalog_path)) {
 	  throw CatalogPathException();
   }
@@ -47,7 +48,7 @@ void VisionParser::ParseCatalogCFVF(
       }
     }
   } catch (const std::exception& e) {
-      throw InvalidCatalogException();
+      throw;
   }
 }
 
@@ -94,6 +95,6 @@ void VisionParser::ParseVisionFlow(std::string file_path, VisionFlow &flow) {
 
     // TODO(Keaven Martin) Valid dependence
   } catch (const std::exception &e) {
-    throw InvalidCfvfException(file_path);
+    throw;
   }
 }

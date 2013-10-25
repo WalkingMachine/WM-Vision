@@ -55,19 +55,5 @@ namespace VisionParser{
       }
   };
 
-  class InvalidCatalogException : public std::exception {
-    virtual const char* what() const throw() {
-        return "Invalid syntax in catalog configuration file";
-      }
-  };
-
-  class InvalidCfvfException : public std::exception {
-    std::string file;
-    virtual const char* what() const throw() {
-        return ("Invalid syntax in the cfvf (" + file + ")").c_str();
-      }
-   public:
-    InvalidCfvfException(std::string file) : file(file) {}
-  };
 }
 #endif  // WM_VISION_INCLUDE_VISION_KERNEL_VISION_PARSER_H_
