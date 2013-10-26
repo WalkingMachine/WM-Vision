@@ -48,6 +48,7 @@ bool VisionInterface::CallbackFlow(
 
   std::string flow_name;
   response.error = vision_errors::NoError;
+  bool flowRunning;
 
   if (!path_map_.empty())
   {
@@ -55,36 +56,55 @@ bool VisionInterface::CallbackFlow(
 	  std::pair<std::string, std::string> key(request.task_name,
 											  request.object_name);
 
-	  // exit if the requested task isn't in catalog.info
+	  // Set an error the requested task isn't in catalog.info
 	  auto path_iterator = path_map_.find(key);
 	  if(path_iterator == path_map_.end()) {
-	    return false; // TODO (m-a) : Continue and set an error
+      ROS_ERROR("Invalid task and/or object");
+      response.error = vision_errors::InvalidTaskObjectError;
 	  } else {
 	    flow_name = path_iterator->second;
-	  }
 
-		// Look within the tasks collection to see if the task already exists
-		auto flow_iterator = flow_container_.find(key);
-		if(flow_iterator != flow_container_.end()) {
-      if(request.action == "stop") {
-        flow_iterator->second->Stop();
-        flow_container_.erase(flow_iterator);
-      } else if(request.action == "start") {
+      // Look within the tasks collection to see if the task already exists
+      auto flow_iterator = flow_container_.find(key);
+
+      // Check if a flow is currently running
+      flowRunning = flow_iterator != flow_container_.end();
+
+      if(request.action == "start") {
+        if (flowRunning) {
+          ROS_WARN("Flow already running");
+          response.error = vision_errors::FlowAlreadyRunning;
+        } else {
+          try {
+            CreateFlow(request.task_name, request.object_name, flow_name, frequency);
+            response.topic_name = flow_name;
+          } catch (const std::exception& e) {
+            ROS_ERROR("Invalid syntax in the cfvf : %s", e.what());
+            response.error = vision_errors::FlowCreationError;
+          }
+        }
+      } else if(request.action == "stop") {
+        if (flowRunning) {
+          flow_iterator->second->Stop();
+          flow_container_.erase(flow_iterator);
+        } else {
+          response.topic_name = "No flow currently running";
+          response.error = vision_errors::NoFlowRunning;
+          ROS_WARN("Cannot stop the flow, no flow currently running");
+        }
       } else if(request.action == "set_frequency") {
-        flow_iterator->second->set_wanted_frequency(frequency);
+        if (flowRunning) {
+          flow_iterator->second->set_wanted_frequency(frequency);
+        } else {
+          response.topic_name = "No flow currently running";
+          response.error = vision_errors::NoFlowRunning;
+          ROS_WARN("Cannot set the frequency, no flow currently running");
+        }
       } else {
-        response.topic_name = "invalid Action name";
+        response.topic_name = "Invalid action name";
         response.error = vision_errors::InvalidActionName;
         ROS_ERROR("Invalid action name");
       }
-	  } else {
-	    try {
-	      CreateFlow(request.task_name, request.object_name, flow_name, frequency);
-        response.topic_name = flow_name;
-	    } catch (const std::exception& e) {
-	      ROS_ERROR("Invalid syntax in the cfvf : %s", e.what());
-	      response.error = vision_errors::FlowCreationError;
-	    }
 	  }
   }
   else

@@ -48,7 +48,7 @@ struct VisionNodeFactory {
     MapType::iterator iterator = map()->find(s);
 
     if (iterator == map()->end())
-      return 0;
+      return nullptr;
 
     return std::shared_ptr<VisionNode>(iterator->second());
   }

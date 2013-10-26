@@ -70,34 +70,45 @@ bool VisionFlow::AddNode(const std::string &type,
                          const Dependences &dependences,
                          const Parameters &parameters,
                          const std::string &debug_node) {
+
   std::shared_ptr<VisionNode> vision_node =
       VisionNodeFactory::CreateInstance(type);
 
-  vision_node->set_id(id);
-  vision_node->set_flow_name(name());
-  vision_node->set_parameters(parameters);
-  vision_node->set_dependences(dependences);
+  if (vision_node == nullptr || id.empty())
+    return false;
 
-  if (debug_node.empty()) {
-    vision_node->set_flow_callback_function_(
-          boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
-    vision_nodes_.push_back(vision_node);
-  } else {
-    std::shared_ptr<VisionDebugNode> vision_debug_node(std::static_pointer_cast<VisionDebugNode>(VisionNodeFactory::CreateInstance(debug_node)));
+  try {
+    vision_node->set_id(id);
+    vision_node->set_flow_name(name());
+    vision_node->set_parameters(parameters);
+    vision_node->set_dependences(dependences);
 
-    vision_debug_node->set_id(id);
-    vision_debug_node->set_flow_name(name());
-    vision_debug_node->set_parameters(parameters);
-    vision_debug_node->set_dependences(dependences);
-    vision_debug_node->set_vision_node(vision_node);
-    vision_debug_node->set_flow_callback_function_(
-              boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
-    vision_node->set_flow_callback_function_(
-              boost::bind(&VisionDebugNode::CallbackFunction, vision_debug_node.get(), _1, _2));
-    vision_debug_node->Init();
-    vision_nodes_.push_back(vision_debug_node);
+    if (debug_node.empty()) {
+      vision_node->set_flow_callback_function_(
+            boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
+      vision_nodes_.push_back(vision_node);
+    } else {
+      std::shared_ptr<VisionDebugNode> vision_debug_node(std::static_pointer_cast<VisionDebugNode>(VisionNodeFactory::CreateInstance(debug_node)));
+
+      if (vision_debug_node == nullptr)
+        return false;
+
+      vision_debug_node->set_id(id);
+      vision_debug_node->set_flow_name(name());
+      vision_debug_node->set_parameters(parameters);
+      vision_debug_node->set_dependences(dependences);
+      vision_debug_node->set_vision_node(vision_node);
+      vision_debug_node->set_flow_callback_function_(
+                boost::bind(&VisionFlow::CallbackFunction, this, _1, _2));
+      vision_node->set_flow_callback_function_(
+                boost::bind(&VisionDebugNode::CallbackFunction, vision_debug_node.get(), _1, _2));
+      vision_debug_node->Init();
+      vision_nodes_.push_back(vision_debug_node);
+    }
+    vision_node->Init();
+  } catch (const std::exception &e) {
+    throw;
   }
-  vision_node->Init();
 
   // TODO(Keaven Martin) Validate
 

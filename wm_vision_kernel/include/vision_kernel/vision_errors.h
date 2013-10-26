@@ -13,12 +13,15 @@ namespace vision_errors {
      NoError = 0,
 
      // Callback Flow
+     InvalidTaskObjectError,
      InvalidActionName,
      FlowCreationError,
      CatalogNotLoaded,
+     FlowAlreadyRunning,
+     NoFlowRunning,
 
-     FIRST_ERROR = NoError,
-     LAST_ERROR = CatalogNotLoaded,
+     FirstError = NoError,
+     LastError = NoFlowRunning,
    };
 }
 
