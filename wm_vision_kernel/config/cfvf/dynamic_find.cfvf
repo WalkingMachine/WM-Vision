@@ -1,0 +1,24 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;base;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+InputImageNode
+{
+    id inputImageRGB
+    debug ImageDebugNode
+    parameter
+    {
+        IsOnCUDA false
+       SourceTopic /camera/rgb/image_raw
+    }
+}
+
+ObjectDetectionNode
+{
+    id objectDetection
+    debug ImageDebugNode
+    dependence
+    {
+        input inputImageRGB
+    }
+}

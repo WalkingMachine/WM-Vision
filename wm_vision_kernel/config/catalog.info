@@ -3,6 +3,7 @@ find_object_boundingbox
     door close_door
     glass close_door
     vase close_door
+    dynamic dynamic_find
 }
 
 find_object_detail
