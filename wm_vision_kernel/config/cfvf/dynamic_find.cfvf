@@ -9,7 +9,7 @@ InputImageNode
     parameter
     {
         IsOnCUDA false
-       SourceTopic /camera/rgb/image_raw
+       SourceTopic /camera/rgb/image_color
     }
 }
 

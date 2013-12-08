@@ -19,7 +19,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/gpu/gpu.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
@@ -34,14 +33,17 @@ Data ObjectDetectionNode::Function(InputData input_data) {
   if (parameters()["IsOnCUDA"] == "true") {
 
   } else {
-	  cv::Mat img_object = cv::imread("/home/escaladeur/Pictures/voyage200.jpg", CV_LOAD_IMAGE_GRAYSCALE );
+
+	  cv::Mat img_object = cv::imread("/home/walking/Pictures/cocacola.jpg", CV_LOAD_IMAGE_UNCHANGED );
+
+
 	  cv::Mat img_scene = *(data->data<cv::Mat>());
-	  ROS_INFO("%d", img_object.size);
-	  ROS_INFO("%d", img_scene.size);
+
+
 	  //-- Step 1: Detect the keypoints using SURF Detector
 	  int minHessian = 400;
 
-	  cv::SurfFeatureDetector detector( minHessian );
+	  cv::SiftFeatureDetector detector( minHessian );
 
 	  std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
 
@@ -49,7 +51,7 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 	  detector.detect( img_scene, keypoints_scene );
 
 	  //-- Step 2: Calculate descriptors (feature vectors)
-	  cv::SurfDescriptorExtractor extractor;
+	  cv::SiftDescriptorExtractor extractor;
 
 	  cv::Mat descriptors_object, descriptors_scene;
 
@@ -90,7 +92,7 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 	  std::vector<cv::Point2f> obj;
 	  std::vector<cv::Point2f> scene;
 
-	  for( int i = 0; i < good_matches.size(); i++ )
+	  for( unsigned int i = 0; i < good_matches.size(); i++ )
 	  {
 	    //-- Get the keypoints from the good matches
 	    obj.push_back( keypoints_object[ good_matches[i].queryIdx ].pt );
@@ -114,10 +116,13 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 	  cv::line( img_matches, scene_corners[3] + cv::Point2f( img_object.cols, 0), scene_corners[0] + cv::Point2f( img_object.cols, 0), cv::Scalar( 0, 255, 0), 4 );
 
 	  //-- Show detected matches
-	  imshow( "Good Matches & Object detection", img_matches );
 	  std::shared_ptr<cv::Mat> worst_variable_name_ever = std::shared_ptr<cv::Mat>(new cv::Mat());
 	  *worst_variable_name_ever = img_matches;
 	  output_data.set_data(worst_variable_name_ever);
+
+	  cv::imwrite("/home/walking/Pictures/derp.jpg", img_matches);
+
+	  ROS_INFO("obect:%d - scene:%d - matches:%d",img_object.type(), img_scene.type(), img_matches.type());
   }
 
   return output_data;
