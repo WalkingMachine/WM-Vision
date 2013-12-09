@@ -44,6 +44,7 @@ add_library(lib${PROJECT_NAME} SHARED
   
 add_library(lib${PROJECT_NAME}Nodes SHARED
   src/vision_kernel/vision_nodes/input_image_node.cc
+  src/vision_kernel/vision_nodes/input_video_capture_node.cc
 
   src/vision_kernel/vision_nodes/grayscale_node.cc
   src/vision_kernel/vision_nodes/threshold_node.cc

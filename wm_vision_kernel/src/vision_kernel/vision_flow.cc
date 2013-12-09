@@ -31,6 +31,7 @@
 #include "../../include/vision_kernel/vision_nodes/door_gap_node.h"
 #include "../../include/vision_kernel/vision_nodes/different_color_betwen_door_and_wall_node.h"
 #include "../../include/vision_kernel/vision_nodes/texture_bottom_of_door_node.h"
+#include "../../include/vision_kernel/vision_nodes/input_video_capture_node.h"
 
 /**
  * Constructor
