@@ -9,7 +9,7 @@ InputImageNode
     parameter
     {
         IsOnCUDA false
-       SourceTopic /camera/rgb/image_color
+        SourceTopic /camera/rgb/image_color
     }
 }
 
@@ -20,5 +20,9 @@ ObjectDetectionNode
     dependence
     {
         input inputImageRGB
+    }
+    parameter
+    {
+    	DebugWindow true
     }
 }

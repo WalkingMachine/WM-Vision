@@ -16,7 +16,6 @@
 #include "../../../include/vision_kernel/vision_nodes/object_detection_node.h"
 
 #include <ros/ros.h>
-#include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
@@ -26,6 +25,18 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 
+void ObjectDetectionNode::Init() {
+  img_object = new cv::Mat(cv::imread("/home/escaladeur/Downloads/chromecast2.jpg",
+                                      CV_LOAD_IMAGE_GRAYSCALE));
+
+  if (parameters()["DebugWindow"] == "true")
+    cv::namedWindow("Object Debug", CV_WINDOW_AUTOSIZE);
+}
+
+ObjectDetectionNode::~ObjectDetectionNode() {
+  delete img_object;
+}
+
 Data ObjectDetectionNode::Function(InputData input_data) {
   std::shared_ptr<Data> data = input_data->at("input");
   Data output_data;
@@ -33,12 +44,9 @@ Data ObjectDetectionNode::Function(InputData input_data) {
   if (parameters()["IsOnCUDA"] == "true") {
 
   } else {
-
-	  cv::Mat img_object = cv::imread("/home/walking/Pictures/cocacola.jpg", CV_LOAD_IMAGE_UNCHANGED );
-
-
-	  cv::Mat img_scene = *(data->data<cv::Mat>());
-
+	  cv::Mat img_scene;
+	  cv::cvtColor(*(data->data<cv::Mat>()), img_scene, CV_BGR2GRAY);
+//	  cv::Mat img_scene = *(data->data<cv::Mat>());
 
 	  //-- Step 1: Detect the keypoints using SURF Detector
 	  int minHessian = 400;
@@ -47,7 +55,7 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 
 	  std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
 
-	  detector.detect( img_object, keypoints_object );
+	  detector.detect( *img_object, keypoints_object );
 	  detector.detect( img_scene, keypoints_scene );
 
 	  //-- Step 2: Calculate descriptors (feature vectors)
@@ -55,13 +63,24 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 
 	  cv::Mat descriptors_object, descriptors_scene;
 
-	  extractor.compute( img_object, keypoints_object, descriptors_object );
+	  extractor.compute( *img_object, keypoints_object, descriptors_object );
 	  extractor.compute( img_scene, keypoints_scene, descriptors_scene );
+
+	  if ( descriptors_object.empty() )
+	     cvError(0,"MatchFinder","1st descriptor empty",__FILE__,__LINE__);
+	  if ( descriptors_scene.empty() ) {
+//	     cvError(0,"MatchFinder","2nd descriptor empty",__FILE__,__LINE__);
+	    std::shared_ptr<cv::Mat> worst_variable_name_ever(new cv::Mat());
+	    *worst_variable_name_ever = img_scene;
+	    output_data.set_data(worst_variable_name_ever);
+	    return output_data;
+	  }
+
 
 	  //-- Step 3: Matching descriptor vectors using FLANN matcher
 	  cv::FlannBasedMatcher matcher;
 	  std::vector< cv::DMatch > matches;
-	  matcher.match( descriptors_object, descriptors_scene, matches );
+	  matcher.match( descriptors_object, descriptors_scene, matches);
 
 	  double max_dist = 0; double min_dist = 100;
 
@@ -72,8 +91,8 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 	    if( dist > max_dist ) max_dist = dist;
 	  }
 
-	  printf("-- Max dist : %f \n", max_dist );
-	  printf("-- Min dist : %f \n", min_dist );
+//	  printf("-- Max dist : %f \n", max_dist );
+//	  printf("-- Min dist : %f \n", min_dist );
 
 	  //-- Draw only "good" matches (i.e. whose distance is less than 3*min_dist )
 	  std::vector< cv::DMatch > good_matches;
@@ -83,9 +102,9 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 	     { good_matches.push_back( matches[i]); }
 	  }
 
-	  cv::Mat img_matches;
-	  cv::drawMatches( img_object, keypoints_object, img_scene, keypoints_scene,
-	               good_matches, img_matches, cv::Scalar::all(-1), cv::Scalar::all(-1),
+	  std::shared_ptr<cv::Mat> img_matches(new cv::Mat());
+	  cv::drawMatches( *img_object, keypoints_object, img_scene, keypoints_scene,
+	               good_matches, *img_matches, cv::Scalar::all(-1), cv::Scalar::all(-1),
 	               cv::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
 
 	  //-- Localize the object
@@ -103,26 +122,31 @@ Data ObjectDetectionNode::Function(InputData input_data) {
 
 	  //-- Get the corners from the image_1 ( the object to be "detected" )
 	  std::vector<cv::Point2f> obj_corners(4);
-	  obj_corners[0] = cvPoint(0,0); obj_corners[1] = cvPoint( img_object.cols, 0 );
-	  obj_corners[2] = cvPoint( img_object.cols, img_object.rows ); obj_corners[3] = cvPoint( 0, img_object.rows );
+	  obj_corners[0] = cvPoint(0,0); obj_corners[1] = cvPoint( img_object->cols, 0 );
+	  obj_corners[2] = cvPoint( img_object->cols, img_object->rows ); obj_corners[3] = cvPoint( 0, img_object->rows );
 	  std::vector<cv::Point2f> scene_corners(4);
 
 	  perspectiveTransform( obj_corners, scene_corners, H);
 
+	  if( img_matches->type() == CV_8U ) {
+	    ROS_INFO("test");
+	    cv::cvtColor( *img_matches, *img_matches, CV_GRAY2BGR );
+	  }
+
 	  //-- Draw lines between the corners (the mapped object in the scene - image_2 )
-	  cv::line( img_matches, scene_corners[0] + cv::Point2f( img_object.cols, 0), scene_corners[1] + cv::Point2f( img_object.cols, 0), cv::Scalar(0, 255, 0), 4 );
-	  cv::line( img_matches, scene_corners[1] + cv::Point2f( img_object.cols, 0), scene_corners[2] + cv::Point2f( img_object.cols, 0), cv::Scalar( 0, 255, 0), 4 );
-	  cv::line( img_matches, scene_corners[2] + cv::Point2f( img_object.cols, 0), scene_corners[3] + cv::Point2f( img_object.cols, 0), cv::Scalar( 0, 255, 0), 4 );
-	  cv::line( img_matches, scene_corners[3] + cv::Point2f( img_object.cols, 0), scene_corners[0] + cv::Point2f( img_object.cols, 0), cv::Scalar( 0, 255, 0), 4 );
+	  cv::line( *img_matches, scene_corners[0] + cv::Point2f( img_object->cols, 0), scene_corners[1] + cv::Point2f( img_object->cols, 0), cv::Scalar(0, 255, 0), 4 );
+	  cv::line( *img_matches, scene_corners[1] + cv::Point2f( img_object->cols, 0), scene_corners[2] + cv::Point2f( img_object->cols, 0), cv::Scalar( 0, 255, 0), 4 );
+	  cv::line( *img_matches, scene_corners[2] + cv::Point2f( img_object->cols, 0), scene_corners[3] + cv::Point2f( img_object->cols, 0), cv::Scalar( 0, 255, 0), 4 );
+	  cv::line( *img_matches, scene_corners[3] + cv::Point2f( img_object->cols, 0), scene_corners[0] + cv::Point2f( img_object->cols, 0), cv::Scalar( 0, 255, 0), 4 );
 
+	  if (parameters()["DebugWindow"] == "true") {
+      cv::imshow("Object Debug", *img_matches);
+      cv::waitKey(1);
+	  }
 	  //-- Show detected matches
-	  std::shared_ptr<cv::Mat> worst_variable_name_ever = std::shared_ptr<cv::Mat>(new cv::Mat());
-	  *worst_variable_name_ever = img_matches;
-	  output_data.set_data(worst_variable_name_ever);
+	  output_data.set_data(img_matches);
 
-	  cv::imwrite("/home/walking/Pictures/derp.jpg", img_matches);
-
-	  ROS_INFO("obect:%d - scene:%d - matches:%d",img_object.type(), img_scene.type(), img_matches.type());
+//	  ROS_INFO("object:%d - scene:%d - matches:%d",img_object.type(), img_scene.type(), img_matches.type());
   }
 
   return output_data;

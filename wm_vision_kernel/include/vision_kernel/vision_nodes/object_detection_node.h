@@ -18,6 +18,7 @@
 
 #include <string>
 #include <map>
+#include <opencv2/opencv.hpp>
 
 #include "../vision_node.h"
 #include "../data.h"
@@ -25,9 +26,13 @@
 
 class ObjectDetectionNode: public VisionNode {
  public:
+  ~ObjectDetectionNode();
   Data Function(InputData input_data);
+  void Init();
+
 
  private:
+  cv::Mat *img_object;
   REGISTER_DEC_TYPE(ObjectDetectionNode);
 };
 
